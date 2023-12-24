@@ -129,7 +129,7 @@ class _HomeTabState extends State<HomeTab> {
             article.urlToImage ?? "",
             width: double.infinity,
             height: MediaQuery.sizeOf(context).height * 0.45,
-            fit: BoxFit.cover,
+            fit: BoxFit.fill,
           ),
           Positioned(
             bottom: 0,
@@ -164,8 +164,7 @@ class _HomeTabState extends State<HomeTab> {
                   ),
                   TextButton(
                     onPressed: () {
-                      // _homeBloc
-                      //     .add(HomeViewAllNewsTapEvent(category: "Top News"));
+                      _homeBloc.add(HomeNewsItemTapEvent(article: article));
                     },
                     style: TextButton.styleFrom(
                       padding: const EdgeInsets.all(0),
@@ -242,7 +241,12 @@ class _HomeTabState extends State<HomeTab> {
           return const SizedBox(width: 10);
         },
         itemBuilder: (context, index) {
-          return _horizontalListItem(data[index]);
+          return GestureDetector(
+            onTap: () {
+              _homeBloc.add(HomeNewsItemTapEvent(article: data[index]));
+            },
+            child: _horizontalListItem(data[index]),
+          );
         },
       ),
     );

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:news_app_flutter/src/business_layer/bloc/dashboard/dashboard_cubit.dart';
+import 'package:news_app_flutter/src/business_layer/bloc/home/home_bloc.dart';
 import 'package:news_app_flutter/src/business_layer/utils/helpers/log_helper.dart';
 import 'package:news_app_flutter/src/data_layer/res/app_themes.dart';
 import 'package:news_app_flutter/src/ui_layer/screens/dashboard.dart';
@@ -58,19 +59,28 @@ class _AppControllerState extends State<AppController>
         /// close the keyboard if tapped anywhere on the app
         FocusManager.instance.primaryFocus?.unfocus();
       },
-      child: MaterialApp(
-        title: 'News App',
-        debugShowCheckedModeBanner: false,
-        navigatorKey: navigatorKey,
-        themeMode: ThemeMode.system,
-        theme: AppThemes.light,
-        darkTheme: AppThemes.dark,
-        onGenerateTitle: (BuildContext context) =>
-            AppLocalizations.of(context)!.app_name,
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        home: BlocProvider(
-            create: (context) => DashboardCubit(), child: Dashboard()),
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider<DashboardCubit>(
+            create: (BuildContext context) => DashboardCubit(),
+          ),
+          BlocProvider<HomeBloc>(
+            create: (BuildContext context) => HomeBloc(),
+          ),
+        ],
+        child: MaterialApp(
+          title: 'News App',
+          debugShowCheckedModeBanner: false,
+          navigatorKey: navigatorKey,
+          themeMode: ThemeMode.system,
+          theme: AppThemes.light,
+          darkTheme: AppThemes.dark,
+          onGenerateTitle: (BuildContext context) =>
+              AppLocalizations.of(context)!.app_name,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Dashboard(),
+        ),
       ),
     );
   }

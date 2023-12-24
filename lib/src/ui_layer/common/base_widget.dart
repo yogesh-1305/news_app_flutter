@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:news_app_flutter/src/data_layer/res/app_colors.dart';
 
 class BaseWidget extends StatelessWidget {
   const BaseWidget({
     Key? key,
     required this.body,
     this.padding,
-    this.backgroundColor = AppColors.colorPrimary,
+    this.backgroundColor,
     this.bottomNavigationBar,
     this.systemUiOverlayStyle,
     this.topSafeArea = true,
@@ -20,7 +19,7 @@ class BaseWidget extends StatelessWidget {
 
   final Widget body;
   final EdgeInsetsGeometry? padding;
-  final Color backgroundColor;
+  final Color? backgroundColor;
   final Widget? bottomNavigationBar;
   final SystemUiOverlayStyle? systemUiOverlayStyle;
   final bool topSafeArea;

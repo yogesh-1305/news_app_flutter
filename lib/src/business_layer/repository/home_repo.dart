@@ -12,6 +12,8 @@ class HomeRepo {
     try {
       final queryParams = {
         "country": await LocationHelper.getUserCountryCode(),
+        "pageSize": 10,
+        "page": 1,
       };
       TopHeadlinesResponse response = await AppNetwork().request(
         url: "top-headlines",

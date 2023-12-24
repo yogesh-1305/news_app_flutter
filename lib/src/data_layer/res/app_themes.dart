@@ -13,6 +13,7 @@ class AppThemes {
     colorScheme: const ColorScheme.light(
       primary: AppColors.colorPrimary,
       onPrimary: AppColors.colorOnPrimary,
+      background: AppColors.colorBackground,
     ),
     textTheme: TextTheme(
       headlineLarge: AppStyles.headline1,
@@ -25,12 +26,13 @@ class AppThemes {
     useMaterial3: true,
   ).copyWith(
     appBarTheme: const AppBarTheme(
-      backgroundColor: AppColors.colorPrimary,
-      foregroundColor: AppColors.colorOnPrimary,
+      backgroundColor: AppColors.colorPrimaryDark,
+      foregroundColor: AppColors.colorOnPrimaryDark,
     ),
     colorScheme: const ColorScheme.dark(
-      primary: AppColors.colorPrimary,
-      onPrimary: AppColors.colorOnPrimary,
+      primary: AppColors.colorPrimaryDark,
+      onPrimary: AppColors.colorOnPrimaryDark,
+      background: AppColors.colorBackgroundDark,
     ),
   );
 }

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:news_app_flutter/src/business_layer/bloc/dashboard/dashboard_cubit.dart';
-import 'package:news_app_flutter/src/business_layer/bloc/home/home_bloc.dart';
 import 'package:news_app_flutter/src/business_layer/utils/helpers/log_helper.dart';
 import 'package:news_app_flutter/src/ui_layer/common/base_widget.dart';
 import 'package:news_app_flutter/src/ui_layer/screens/dashboard_tabs/home_tab.dart';
@@ -37,11 +36,7 @@ class Dashboard extends StatelessWidget {
       return IndexedStack(
         index: index,
         children: [
-          BlocProvider(
-              create: (BuildContext context) {
-                return HomeBloc();
-              },
-              child: HomeTab()),
+          HomeTab(),
           SearchTab(),
           ProfileTab(),
         ],

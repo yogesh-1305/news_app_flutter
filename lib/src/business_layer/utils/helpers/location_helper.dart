@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 
 class LocationHelper {
   static getUserCountryCode() async {
@@ -9,7 +10,7 @@ class LocationHelper {
         countryCode = response.data.toString();
       }
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
     return countryCode;
   }
