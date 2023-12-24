@@ -11,9 +11,9 @@ class HomeInitial extends HomeState {}
 class HomeLoadingState extends HomeState {}
 
 class HomeSuccessState extends HomeState {
-  final List<Articles> articles;
+  final TopHeadlinesResponse response;
 
-  HomeSuccessState({required this.articles});
+  HomeSuccessState({required this.response});
 }
 
 class HomeFailureState extends HomeState {

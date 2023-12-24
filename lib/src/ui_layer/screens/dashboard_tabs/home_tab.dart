@@ -87,8 +87,8 @@ class _HomeTabState extends State<HomeTab> {
             ),
           );
         case HomeSuccessState:
-          final data = (state as HomeSuccessState).articles;
-          return _buildSuccessScreen(context, data);
+          final data = (state as HomeSuccessState).response;
+          return _buildSuccessScreen(context, data.articles ?? []);
         case HomeFailureState:
           return Center(child: Text("Error", style: AppStyles.headline5));
         default:
@@ -110,8 +110,6 @@ class _HomeTabState extends State<HomeTab> {
             _buildNewsOfTheDay(context, data.first),
             _buildHorizontalListSection(
                 context, "Breaking News", data.sublist(1)),
-            _buildHorizontalListSection(
-                context, "Around the Globe", data.sublist(1)),
             const SizedBox(height: 20),
           ],
         ),

@@ -1,16 +1,17 @@
 import 'package:news_app_flutter/src/business_layer/network/app_network.dart';
 import 'package:news_app_flutter/src/business_layer/network/exception_types.dart';
 import 'package:news_app_flutter/src/business_layer/network/http_response_code.dart';
+import 'package:news_app_flutter/src/business_layer/utils/helpers/location_helper.dart';
 import 'package:news_app_flutter/src/business_layer/utils/helpers/log_helper.dart';
 import 'package:news_app_flutter/src/data_layer/models/response/TopHeadlinesResponse.dart';
 
 class HomeRepo {
   final String _tag = "Home Repository =====> ";
 
-  Future<TopHeadlinesResponse> getTopHeadlines() async {
+  Future<TopHeadlinesResponse> getHomeScreenNewsContent() async {
     try {
       final queryParams = {
-        "country": "us",
+        "country": await LocationHelper.getUserCountryCode(),
       };
       TopHeadlinesResponse response = await AppNetwork().request(
         url: "top-headlines",

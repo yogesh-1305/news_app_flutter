@@ -4,13 +4,9 @@ import 'package:bloc/bloc.dart';
 import 'package:news_app_flutter/src/business_layer/bloc/home/home_event.dart';
 import 'package:news_app_flutter/src/business_layer/bloc/home/home_state.dart';
 import 'package:news_app_flutter/src/business_layer/repository/home_repo.dart';
-import 'package:news_app_flutter/src/data_layer/models/response/TopHeadlinesResponse.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final HomeRepo _homeRepo = HomeRepo();
-
-  List<Articles> topArticlesCurrentLocation = [];
-  List<Articles> topArticlesGlobal = [];
 
   HomeBloc() : super(HomeInitial()) {
     on<HomeInitialEvent>(homeInitialState);
@@ -22,11 +18,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       HomeInitialEvent event, Emitter<HomeState> emit) async {
     /// call initial api
     emit(HomeLoadingState());
-    final response = await _homeRepo.getTopHeadlines();
+    final response = await _homeRepo.getHomeScreenNewsContent();
     if (response.status == "ok") {
-      topArticlesCurrentLocation
-          .addAll(response.articles as Iterable<Articles>);
-      emit(HomeSuccessState(articles: topArticlesCurrentLocation));
+      emit(HomeSuccessState(response: response));
     } else {
       emit(HomeFailureState(exceptionType: response.exceptionType));
     }
