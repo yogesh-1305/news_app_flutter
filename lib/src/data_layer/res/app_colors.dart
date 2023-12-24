@@ -1,4 +1,4 @@
-import 'dart:ui';
+import 'package:flutter/material.dart';
 
 class AppColors {
   static const Color colorPrimary = Color(0xFFFFFFFF);
@@ -10,4 +10,15 @@ class AppColors {
   static const Color colorError = Color(0xFFB00020);
   static const Color colorOnBackground = Color(0xFF000000);
   static const Color colorOnSurface = Color(0xFF000000);
+
+  static LinearGradient stackShadowGradient = LinearGradient(
+    colors: [
+      Colors.black.withOpacity(0.8),
+      Colors.black.withOpacity(0.4),
+      Colors.black.withOpacity(0.2),
+      Colors.transparent,
+    ],
+    begin: Alignment.bottomCenter,
+    end: Alignment.topCenter,
+  );
 }

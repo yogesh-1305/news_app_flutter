@@ -35,15 +35,12 @@ class BaseWidget extends StatelessWidget {
     return Scaffold(
       bottomSheet: bottomSheet,
       backgroundColor: backgroundColor,
-      body: AnnotatedRegion<SystemUiOverlayStyle>(
-        value: systemUiOverlayStyle ?? SystemUiOverlayStyle.dark,
-        child: SafeArea(
-            top: topSafeArea,
-            bottom: bottomSafeArea,
-            left: leftSafeArea,
-            right: rightSafeArea,
-            child: body),
-      ),
+      body: SafeArea(
+          top: topSafeArea,
+          bottom: bottomSafeArea,
+          left: leftSafeArea,
+          right: rightSafeArea,
+          child: body),
       bottomNavigationBar: bottomNavigationBar,
       appBar: appBar,
     );
