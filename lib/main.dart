@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:news_app_flutter/src/app_controller.dart';
+import 'package:news_app_flutter/src/business_layer/utils/helpers/flavor_configuration_helper.dart';
 
 /// The entrypoint for the Flutter application.
 void main() async {
@@ -10,6 +11,11 @@ void main() async {
 
   /// Ensuring Size of the phone in UI Design
   await ScreenUtil.ensureScreenSize();
+
+  /// setting the flavor config for the app
+  /// flavors -> dev, staging, production
+  /// default flavor is dev
+  FlavorConfig.setServerConfig();
 
   /// Runs the app with the provided widget as the root of the widget tree.
   runApp(const AppController());

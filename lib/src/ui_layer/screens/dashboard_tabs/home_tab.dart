@@ -1,8 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:news_app_flutter/src/business_layer/bloc/home/home_bloc.dart';
+import 'package:news_app_flutter/src/business_layer/bloc/home/home_event.dart';
+import 'package:news_app_flutter/src/business_layer/bloc/home/home_state.dart';
+import 'package:news_app_flutter/src/business_layer/utils/extensions/context_extension.dart';
+import 'package:news_app_flutter/src/business_layer/utils/helpers/date_time_helper.dart';
+import 'package:news_app_flutter/src/data_layer/models/response/TopHeadlinesResponse.dart';
 import 'package:news_app_flutter/src/data_layer/res/app_colors.dart';
 import 'package:news_app_flutter/src/data_layer/res/app_styles.dart';
 import 'package:news_app_flutter/src/ui_layer/common/base_widget.dart';
+import 'package:news_app_flutter/src/ui_layer/screens/news_detail_screen.dart';
+import 'package:news_app_flutter/src/ui_layer/screens/view_all_screen.dart';
 
 class HomeTab extends StatefulWidget {
   const HomeTab({super.key});
@@ -14,32 +24,102 @@ class HomeTab extends StatefulWidget {
 class _HomeTabState extends State<HomeTab> {
   late AppLocalizations _localizations;
 
+  late HomeBloc _homeBloc;
+
+  @override
+  void initState() {
+    SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+      _homeBloc.add(HomeInitialEvent());
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     /// Initialize the localizations
     _localizations = AppLocalizations.of(context)!;
 
-    /// Return the BaseWidget
-    return BaseWidget(
-      body: _buildBody(context),
-    );
-  }
+    /// Initialize the bloc
+    _homeBloc = BlocProvider.of<HomeBloc>(context);
 
-  Widget _buildBody(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildNewsOfTheDay(context),
-          _buildHorizontalListView(context, "Top News"),
-          _buildHorizontalListView(context, "Around the Globe"),
-          const SizedBox(height: 20),
-        ],
+    /// Return the BaseWidget
+    return BlocListener(
+      bloc: _homeBloc,
+      listenWhen: (previous, current) {
+        return current is HomeNavigateToNewsDetailState ||
+            current is HomeNavigateToViewAllNewsState;
+      },
+      listener: (context, state) {
+        switch (state.runtimeType) {
+          case HomeNavigateToNewsDetailState:
+            final article = (state as HomeNavigateToNewsDetailState).article;
+            context.push(NewsDetailScreen(article: article));
+            break;
+          case HomeNavigateToViewAllNewsState:
+            context.push(const ViewAllScreen());
+            break;
+        }
+      },
+      child: BaseWidget(
+        body: _buildBody(context),
       ),
     );
   }
 
-  Widget _buildNewsOfTheDay(BuildContext context) {
+  Widget _buildBody(BuildContext context) {
+    return BlocBuilder<HomeBloc, HomeState>(buildWhen: (previous, current) {
+      return current is HomeInitial ||
+          current is HomeLoadingState ||
+          current is HomeSuccessState ||
+          current is HomeFailureState;
+    }, builder: (context, state) {
+      switch (state.runtimeType) {
+        case HomeInitial:
+          return const Center(
+            child: CircularProgressIndicator(
+              color: Colors.red,
+            ),
+          );
+        case HomeLoadingState:
+          return const Center(
+            child: CircularProgressIndicator(
+              color: Colors.red,
+            ),
+          );
+        case HomeSuccessState:
+          final data = (state as HomeSuccessState).articles;
+          return _buildSuccessScreen(context, data);
+        case HomeFailureState:
+          return Center(child: Text("Error", style: AppStyles.headline5));
+        default:
+          return Center(child: Text("Error", style: AppStyles.headline5));
+      }
+    });
+  }
+
+  Widget _buildSuccessScreen(BuildContext context, List<Articles> data) {
+    return RefreshIndicator(
+      onRefresh: () async {
+        _homeBloc.add(HomeInitialEvent());
+      },
+      child: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildNewsOfTheDay(context, data.first),
+            _buildHorizontalListSection(
+                context, "Breaking News", data.sublist(1)),
+            _buildHorizontalListSection(
+                context, "Around the Globe", data.sublist(1)),
+            const SizedBox(height: 20),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNewsOfTheDay(BuildContext context, Articles article) {
     return ClipRRect(
       borderRadius: const BorderRadius.only(
         bottomLeft: Radius.circular(20),
@@ -47,7 +127,12 @@ class _HomeTabState extends State<HomeTab> {
       ),
       child: Stack(
         children: [
-          const Placeholder(),
+          Image.network(
+            article.urlToImage ?? "",
+            width: double.infinity,
+            height: MediaQuery.sizeOf(context).height * 0.45,
+            fit: BoxFit.cover,
+          ),
           Positioned(
             bottom: 0,
             left: 0,
@@ -74,13 +159,16 @@ class _HomeTabState extends State<HomeTab> {
                     ),
                   ),
                   Text(
-                    "News Title",
+                    article.title ?? "",
                     maxLines: 3,
                     overflow: TextOverflow.ellipsis,
                     style: AppStyles.headline5.copyWith(color: Colors.white),
                   ),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      // _homeBloc
+                      //     .add(HomeViewAllNewsTapEvent(category: "Top News"));
+                    },
                     style: TextButton.styleFrom(
                       padding: const EdgeInsets.all(0),
                     ),
@@ -109,7 +197,8 @@ class _HomeTabState extends State<HomeTab> {
     );
   }
 
-  Widget _buildHorizontalListView(BuildContext context, String title) {
+  Widget _buildHorizontalListSection(
+      BuildContext context, String title, List<Articles> data) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -125,7 +214,9 @@ class _HomeTabState extends State<HomeTab> {
                 style: AppStyles.headline5,
               ),
               TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  _homeBloc.add(HomeViewAllNewsTapEvent(category: title));
+                },
                 child: Text(
                   "View All",
                   style: AppStyles.bodyText1.copyWith(
@@ -135,47 +226,75 @@ class _HomeTabState extends State<HomeTab> {
             ],
           ),
         ),
-        SizedBox(
-          height: 160,
-          child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              itemCount: 20,
-              separatorBuilder: (context, index) {
-                return const SizedBox(width: 10);
-              },
-              itemBuilder: (context, index) {
-                return SizedBox(
-                  width: 180,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        height: 100,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: const Placeholder(),
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        "News Title",
-                        style: AppStyles.headline6,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      Text(
-                        "Published Date",
-                        style: AppStyles.caption,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                  ),
-                );
-              }),
-        ),
+
+        /// This is the horizontal list view
+        _listView(data),
       ],
+    );
+  }
+
+  Widget _listView(List<Articles> data) {
+    return SizedBox(
+      height: 280,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        itemCount: data.length,
+        separatorBuilder: (context, index) {
+          return const SizedBox(width: 10);
+        },
+        itemBuilder: (context, index) {
+          return _horizontalListItem(data[index]);
+        },
+      ),
+    );
+  }
+
+  Widget _horizontalListItem(Articles data) {
+    return SizedBox(
+      width: MediaQuery.sizeOf(context).width * 0.6,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: 160,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Image.network(
+                data.urlToImage ?? "",
+                width: double.infinity,
+                height: double.infinity,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return const Center(
+                    child: Icon(Icons.error),
+                  );
+                },
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            data.title ?? "",
+            style: AppStyles.headline6,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 5),
+          Text(
+            DateTimeHelper.getHoursAgo(data.publishedAt ?? ""),
+            style: AppStyles.caption,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          Text(
+            "by ${data.source?.name ?? ""}",
+            style: AppStyles.caption,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
     );
   }
 }
