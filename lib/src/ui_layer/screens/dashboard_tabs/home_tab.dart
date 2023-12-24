@@ -107,7 +107,7 @@ class _HomeTabState extends State<HomeTab> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildNewsOfTheDay(context, data.first),
+            _buildNewsOfTheDay(context, data.last),
             _buildHorizontalListSection(
                 context, "Breaking News", data.sublist(1)),
             const SizedBox(height: 20),

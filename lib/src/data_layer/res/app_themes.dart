@@ -20,6 +20,10 @@ class AppThemes {
       headlineMedium: AppStyles.headline2,
       headlineSmall: AppStyles.headline3,
     ),
+    tabBarTheme: TabBarTheme(
+      labelColor: AppColors.colorOnPrimary,
+      unselectedLabelColor: AppColors.colorOnPrimary.withOpacity(0.5),
+    ),
   );
 
   static final ThemeData dark = ThemeData.dark(
