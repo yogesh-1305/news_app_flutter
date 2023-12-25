@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:news_app_flutter/gen/assets.gen.dart';
 import 'package:news_app_flutter/src/business_layer/bloc/home/home_bloc.dart';
 import 'package:news_app_flutter/src/business_layer/bloc/home/home_event.dart';
 import 'package:news_app_flutter/src/business_layer/bloc/home/home_state.dart';
@@ -62,18 +63,14 @@ class _HomeTabState extends State<HomeTab> {
             ),
           );
         case HomeLoadingState:
-          return const Center(
-            child: CircularProgressIndicator(
-              color: Colors.red,
-            ),
-          );
+          return Center(child: Assets.animations.searchAnim.lottie());
         case HomeSuccessState:
           final data = (state as HomeSuccessState).response;
           return _buildSuccessScreen(context, data.articles ?? []);
         case HomeFailureState:
-          return Center(child: Text("Error", style: AppStyles.headline5));
+          return Center(child: Assets.animations.noDataAnim.lottie());
         default:
-          return Center(child: Text("Error", style: AppStyles.headline5));
+          return Center(child: Assets.animations.searchAnim.lottie());
       }
     });
   }
@@ -90,7 +87,7 @@ class _HomeTabState extends State<HomeTab> {
           children: [
             _buildNewsOfTheDay(context, data.first),
             _buildHorizontalListSection(
-                context, "Breaking News", data.sublist(1)),
+                context, _localizations.breaking_news, data.sublist(1)),
             const SizedBox(height: 20),
           ],
         ),
@@ -133,7 +130,7 @@ class _HomeTabState extends State<HomeTab> {
                       borderRadius: BorderRadius.circular(40),
                     ),
                     child: Text(
-                      "News of the Day",
+                      _localizations.news_of_the_day,
                       style: AppStyles.caption.copyWith(color: Colors.white),
                     ),
                   ),
@@ -153,7 +150,7 @@ class _HomeTabState extends State<HomeTab> {
                     child: Row(
                       children: [
                         Text(
-                          "Learn More",
+                          _localizations.learn_more,
                           style:
                               AppStyles.bodyText1.copyWith(color: Colors.white),
                         ),
@@ -194,7 +191,7 @@ class _HomeTabState extends State<HomeTab> {
               TextButton(
                 onPressed: () {},
                 child: Text(
-                  "View All",
+                  _localizations.view_all,
                   style: AppStyles.bodyText1.copyWith(
                       color: Colors.blue, fontWeight: FontWeight.w600),
                 ),

@@ -6,17 +6,21 @@ class CommonTextField extends StatelessWidget {
     super.key,
     required this.controller,
     required this.onChanged,
+    this.onSuffixIconPressed,
   });
 
   /// The controller for the text field
   final TextEditingController controller;
 
   /// The function to be called when the text field is changed
-  final Function? onChanged;
+  final Function(String value)? onChanged;
+
+  /// on suffix icon pressed
+  final Function? onSuffixIconPressed;
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
+    return TextFormField(
       controller: controller,
       style: AppStyles.subtitle1,
       onChanged: (value) {
@@ -31,7 +35,17 @@ class CommonTextField extends StatelessWidget {
         ),
         filled: true,
         fillColor: Colors.grey[200],
-        suffixIcon: const Icon(Icons.filter_alt_outlined),
+        suffixIcon: InkWell(
+          onTap: () {
+            if (onSuffixIconPressed != null) {
+              onSuffixIconPressed!();
+            }
+          },
+          child: const Icon(
+            Icons.filter_alt_outlined,
+            color: Colors.black,
+          ),
+        ),
       ),
     );
   }

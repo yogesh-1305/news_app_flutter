@@ -2,7 +2,7 @@ class ApiConstants {
   /// api URLs - start -------------------------------------------------
   /// Api URLS DEVELOPMENT
   static const urlDevServer = 'https://newsapi.org/v2/';
-  static const devApiKey = 'f14ce12005374b77a2504832dd4ecab7';
+  static const devApiKey = 'f082dd125065453ba5da3cb4fa97d35b';
 
   /// Api URLS PRODUCTION
   static const urlProdServer = '';

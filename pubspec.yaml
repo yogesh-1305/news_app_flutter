@@ -58,9 +58,20 @@ dependencies:
 
   path_provider: ^2.1.1
 
+  # for animations
+  lottie: ^2.7.0
+
+flutter_gen:
+
+  integrations:
+    lottie: true
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+  build_runner:
+  flutter_gen_runner:
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -87,6 +98,7 @@ flutter:
     - assets/
     - assets/images/
     - assets/icons/
+    - assets/animations/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

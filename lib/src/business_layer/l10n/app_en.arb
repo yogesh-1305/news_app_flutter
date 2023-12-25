@@ -5,5 +5,19 @@
   "profile": "Profile",
   "view_all": "View All",
   "no_data": "No Data",
-  "discover": "Discover"
+  "discover": "Discover",
+  "news_from_all_over_the_world": "News from all over the world",
+  "news": "News",
+  "news_detail": "News Detail",
+  "general": "General",
+  "business": "Business",
+  "entertainment": "Entertainment",
+  "health": "Health",
+  "science": "Science",
+  "sports": "Sports",
+  "technology": "Technology",
+  "breaking_news": "Breaking News",
+  "top_headlines": "Top Headlines",
+  "news_of_the_day": "News of the day",
+  "learn_more": "Learn More"
 }

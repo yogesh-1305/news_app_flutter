@@ -35,7 +35,7 @@ class Dashboard extends StatelessWidget {
       LogHelper.logData("Dashboard index ===> $index");
       return IndexedStack(
         index: index,
-        children: [
+        children: const [
           HomeTab(),
           DiscoverTab(),
           ProfileTab(),

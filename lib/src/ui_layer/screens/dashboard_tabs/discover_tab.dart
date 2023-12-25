@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:news_app_flutter/gen/assets.gen.dart';
+import 'package:news_app_flutter/src/app_controller.dart';
 import 'package:news_app_flutter/src/business_layer/bloc/discover/discover_bloc.dart';
 import 'package:news_app_flutter/src/business_layer/bloc/discover/discover_event.dart';
 import 'package:news_app_flutter/src/business_layer/bloc/discover/discover_state.dart';
 import 'package:news_app_flutter/src/business_layer/utils/extensions/context_extension.dart';
 import 'package:news_app_flutter/src/business_layer/utils/helpers/date_time_helper.dart';
+import 'package:news_app_flutter/src/data_layer/constants/app_constants.dart';
 import 'package:news_app_flutter/src/data_layer/models/response/TopHeadlinesResponse.dart';
 import 'package:news_app_flutter/src/data_layer/res/app_styles.dart';
 import 'package:news_app_flutter/src/ui_layer/common/common_text_field.dart';
@@ -26,23 +30,18 @@ class _DiscoverTabState extends State<DiscoverTab>
   /// tab controller to control the tabs
   late TabController _tabController;
 
+  /// localizations
+  late AppLocalizations _localizations;
+
   /// list of visited tabs to keep track of visited tabs
   /// to avoid calling the api again on the same tab click
   List<int> visitedTabs = [];
 
   /// to keep track of the active category
-  String activeCategory = "general";
+  String activeCategory = AppConstants.general;
 
   /// list of categories to show in the tab bar
-  List<Tab> totalCategories = const [
-    Tab(text: "General"),
-    Tab(text: "Business"),
-    Tab(text: "Entertainment"),
-    Tab(text: "Health"),
-    Tab(text: "Science"),
-    Tab(text: "Sports"),
-    Tab(text: "Technology"),
-  ];
+  late List<Tab> totalCategories;
 
   /// page number for each category
   int pageGeneral = 1;
@@ -76,18 +75,40 @@ class _DiscoverTabState extends State<DiscoverTab>
 
   @override
   void initState() {
+    /// initialize the localizations
+    _localizations = AppLocalizations.of(navigatorKey.currentContext!)!;
+
+    /// initialize the list of categories
+    totalCategories = [
+      Tab(text: _localizations.general),
+      Tab(text: _localizations.business),
+      Tab(text: _localizations.entertainment),
+      Tab(text: _localizations.health),
+      Tab(text: _localizations.science),
+      Tab(text: _localizations.sports),
+      Tab(text: _localizations.technology),
+    ];
+
     /// initialize the tab controller
-    _tabController = TabController(length: 7, vsync: this);
+    _tabController = TabController(length: totalCategories.length, vsync: this);
 
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
       /// call the api to get the data for the first time
-      _discoverBloc.add(DiscoverGetContentEvent(page: 1, category: "general"));
+      _discoverBloc.add(
+        DiscoverGetContentEvent(
+          page: 1,
+          category: AppConstants.general,
+        ),
+      );
     });
 
+    /// listen for tab page changes
     addTabPageChangeListener();
 
+    /// listen for scroll events
     addScrollListener();
 
+    /// call super
     super.initState();
   }
 
@@ -107,29 +128,8 @@ class _DiscoverTabState extends State<DiscoverTab>
         /// index - 6 -> technology
 
         /// get the category according to the index
-        switch (_tabController.index) {
-          case 0:
-            activeCategory = "general";
-            break;
-          case 1:
-            activeCategory = "business";
-            break;
-          case 2:
-            activeCategory = "entertainment";
-            break;
-          case 3:
-            activeCategory = "health";
-            break;
-          case 4:
-            activeCategory = "science";
-            break;
-          case 5:
-            activeCategory = "sports";
-            break;
-          case 6:
-            activeCategory = "technology";
-            break;
-        }
+        activeCategory =
+            AppConstants.getDiscoverCategoryName(_tabController.index);
 
         /// explicitly add 0 to visited tabs
         visitedTabs.add(0);
@@ -157,7 +157,7 @@ class _DiscoverTabState extends State<DiscoverTab>
         _discoverBloc.add(
           DiscoverGetContentEvent(
             page: ++pageGeneral,
-            category: "general",
+            category: AppConstants.general,
           ),
         );
       }
@@ -168,7 +168,7 @@ class _DiscoverTabState extends State<DiscoverTab>
         _discoverBloc.add(
           DiscoverGetContentEvent(
             page: ++pageBusiness,
-            category: "business",
+            category: AppConstants.business,
           ),
         );
       }
@@ -179,7 +179,7 @@ class _DiscoverTabState extends State<DiscoverTab>
         _discoverBloc.add(
           DiscoverGetContentEvent(
             page: ++pageEntertainment,
-            category: "entertainment",
+            category: AppConstants.entertainment,
           ),
         );
       }
@@ -190,7 +190,7 @@ class _DiscoverTabState extends State<DiscoverTab>
         _discoverBloc.add(
           DiscoverGetContentEvent(
             page: ++pageHealth,
-            category: "health",
+            category: AppConstants.health,
           ),
         );
       }
@@ -201,7 +201,7 @@ class _DiscoverTabState extends State<DiscoverTab>
         _discoverBloc.add(
           DiscoverGetContentEvent(
             page: ++pageScience,
-            category: "science",
+            category: AppConstants.science,
           ),
         );
       }
@@ -212,7 +212,7 @@ class _DiscoverTabState extends State<DiscoverTab>
         _discoverBloc.add(
           DiscoverGetContentEvent(
             page: ++pageSports,
-            category: "sports",
+            category: AppConstants.sports,
           ),
         );
       }
@@ -223,7 +223,7 @@ class _DiscoverTabState extends State<DiscoverTab>
         _discoverBloc.add(
           DiscoverGetContentEvent(
             page: ++pageTechnology,
-            category: "technology",
+            category: AppConstants.technology,
           ),
         );
       }
@@ -253,55 +253,18 @@ class _DiscoverTabState extends State<DiscoverTab>
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         Text(
-                          "Discover",
+                          _localizations.discover,
                           style: AppStyles.headline4,
                         ),
                         Text(
-                          "News from all over the world",
+                          _localizations.news_from_all_over_the_world,
                           style: AppStyles.bodyText2,
                         ),
                         const SizedBox(height: 20),
                         CommonTextField(
                           controller: searchController,
-                          onChanged: (value) {
-                            switch (activeCategory) {
-                              case "general":
-                                pageGeneral = 1;
-                                articlesGeneral = [];
-                                break;
-                              case "business":
-                                pageBusiness = 1;
-                                articlesBusiness = [];
-                                break;
-                              case "entertainment":
-                                pageEntertainment = 1;
-                                articlesEntertainment = [];
-                                break;
-                              case "health":
-                                pageHealth = 1;
-                                articlesHealth = [];
-                                break;
-                              case "science":
-                                pageScience = 1;
-                                articlesScience = [];
-                                break;
-                              case "sports":
-                                pageSports = 1;
-                                articlesSports = [];
-                                break;
-                              case "technology":
-                                pageTechnology = 1;
-                                articlesTechnology = [];
-                                break;
-                            }
-                            _discoverBloc.add(
-                              DiscoverGetContentEvent(
-                                page: 1,
-                                category: activeCategory,
-                                searchTerm: value,
-                              ),
-                            );
-                          },
+                          onChanged: _handleTextFieldOnChanged,
+                          onSuffixIconPressed: _handleSearchFilterIconTap,
                         ),
                         const SizedBox(height: 10),
                       ],
@@ -328,7 +291,7 @@ class _DiscoverTabState extends State<DiscoverTab>
             builder: (context, state) {
               switch (state.runtimeType) {
                 case DiscoverLoadingState:
-                  return const Center(child: CircularProgressIndicator());
+                  return Center(child: Assets.animations.searchAnim.lottie());
                 case DiscoverFailureState:
                   return _buildTabBarView("", []);
                 case DiscoverSuccessState:
@@ -337,7 +300,7 @@ class _DiscoverTabState extends State<DiscoverTab>
                   return _buildTabBarView(
                       stateData.category, stateData.articles);
                 default:
-                  return const Center(child: CircularProgressIndicator());
+                  return Center(child: Assets.animations.searchAnim.lottie());
               }
             },
           ),
@@ -349,25 +312,25 @@ class _DiscoverTabState extends State<DiscoverTab>
   Widget _buildTabBarView(String category, List<Articles> articles) {
     /// add the articles to the list according to the category
     switch (category) {
-      case "general":
+      case AppConstants.general:
         articlesGeneral.addAll(articles);
         break;
-      case "business":
+      case AppConstants.business:
         articlesBusiness.addAll(articles);
         break;
-      case "entertainment":
+      case AppConstants.entertainment:
         articlesEntertainment.addAll(articles);
         break;
-      case "health":
+      case AppConstants.health:
         articlesHealth.addAll(articles);
         break;
-      case "science":
+      case AppConstants.science:
         articlesScience.addAll(articles);
         break;
-      case "sports":
+      case AppConstants.sports:
         articlesSports.addAll(articles);
         break;
-      case "technology":
+      case AppConstants.technology:
         articlesTechnology.addAll(articles);
         break;
     }
@@ -405,11 +368,7 @@ class _DiscoverTabState extends State<DiscoverTab>
     /// check if the list is empty
     /// if empty show no data found
     if (articles.isEmpty) {
-      return Center(
-          child: Text(
-        "No data found",
-        style: AppStyles.bodyText2,
-      ));
+      return Assets.animations.noDataAnim.lottie(repeat: false, reverse: true);
     }
 
     /// if not empty show the list
@@ -480,6 +439,52 @@ class _DiscoverTabState extends State<DiscoverTab>
         },
       ),
     );
+  }
+
+  void _handleTextFieldOnChanged(String value) {
+    {
+      switch (activeCategory) {
+        case AppConstants.general:
+          pageGeneral = 1;
+          articlesGeneral = [];
+          break;
+        case AppConstants.general:
+          pageBusiness = 1;
+          articlesBusiness = [];
+          break;
+        case AppConstants.entertainment:
+          pageEntertainment = 1;
+          articlesEntertainment = [];
+          break;
+        case AppConstants.health:
+          pageHealth = 1;
+          articlesHealth = [];
+          break;
+        case AppConstants.science:
+          pageScience = 1;
+          articlesScience = [];
+          break;
+        case AppConstants.sports:
+          pageSports = 1;
+          articlesSports = [];
+          break;
+        case AppConstants.technology:
+          pageTechnology = 1;
+          articlesTechnology = [];
+          break;
+      }
+      _discoverBloc.add(
+        DiscoverGetContentEvent(
+          page: 1,
+          category: activeCategory,
+          searchTerm: value,
+        ),
+      );
+    }
+  }
+
+  void _handleSearchFilterIconTap() {
+    debugPrint("Search filter icon tapped");
   }
 
   void triggerPullToRefresh(String category) {
