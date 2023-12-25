@@ -4,9 +4,9 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:news_app_flutter/src/business_layer/bloc/dashboard/dashboard_cubit.dart';
 import 'package:news_app_flutter/src/business_layer/utils/helpers/log_helper.dart';
 import 'package:news_app_flutter/src/ui_layer/common/base_widget.dart';
+import 'package:news_app_flutter/src/ui_layer/screens/dashboard_tabs/discover_tab.dart';
 import 'package:news_app_flutter/src/ui_layer/screens/dashboard_tabs/home_tab.dart';
 import 'package:news_app_flutter/src/ui_layer/screens/dashboard_tabs/profile_tab.dart';
-import 'package:news_app_flutter/src/ui_layer/screens/dashboard_tabs/search_tab.dart';
 
 class Dashboard extends StatelessWidget {
   Dashboard({super.key});
@@ -37,7 +37,7 @@ class Dashboard extends StatelessWidget {
         index: index,
         children: [
           HomeTab(),
-          SearchTab(),
+          DiscoverTab(),
           ProfileTab(),
         ],
       );
@@ -59,15 +59,15 @@ class Dashboard extends StatelessWidget {
         },
         items: [
           BottomNavigationBarItem(
-            icon: const Icon(Icons.home),
+            icon: const Icon(Icons.home_filled),
             label: _localizations.home,
           ),
           BottomNavigationBarItem(
-            icon: const Icon(Icons.search),
-            label: _localizations.search,
+            icon: const Icon(Icons.search_rounded),
+            label: _localizations.discover,
           ),
           BottomNavigationBarItem(
-            icon: const Icon(Icons.person),
+            icon: const Icon(Icons.person_2_outlined),
             label: _localizations.profile,
           ),
         ],

@@ -3,5 +3,7 @@
   "home": "Home",
   "search": "Search",
   "profile": "Profile",
-  "view_all": "View All"
+  "view_all": "View All",
+  "no_data": "No Data",
+  "discover": "Discover"
 }
