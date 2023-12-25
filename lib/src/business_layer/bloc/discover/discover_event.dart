@@ -5,8 +5,10 @@ abstract class DiscoverEvents {}
 class DiscoverGetContentEvent extends DiscoverEvents {
   int page;
   String category;
+  String searchTerm = "";
 
-  DiscoverGetContentEvent({required this.page, required this.category});
+  DiscoverGetContentEvent(
+      {required this.page, required this.category, this.searchTerm = ""});
 }
 
 class DiscoverLoadingEvent extends DiscoverEvents {}

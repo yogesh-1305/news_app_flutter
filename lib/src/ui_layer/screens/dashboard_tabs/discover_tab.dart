@@ -4,10 +4,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app_flutter/src/business_layer/bloc/discover/discover_bloc.dart';
 import 'package:news_app_flutter/src/business_layer/bloc/discover/discover_event.dart';
 import 'package:news_app_flutter/src/business_layer/bloc/discover/discover_state.dart';
+import 'package:news_app_flutter/src/business_layer/utils/extensions/context_extension.dart';
 import 'package:news_app_flutter/src/business_layer/utils/helpers/date_time_helper.dart';
 import 'package:news_app_flutter/src/data_layer/models/response/TopHeadlinesResponse.dart';
 import 'package:news_app_flutter/src/data_layer/res/app_styles.dart';
 import 'package:news_app_flutter/src/ui_layer/common/common_text_field.dart';
+import 'package:news_app_flutter/src/ui_layer/screens/news_detail_screen.dart';
 
 class DiscoverTab extends StatefulWidget {
   const DiscoverTab({super.key});
@@ -27,6 +29,20 @@ class _DiscoverTabState extends State<DiscoverTab>
   /// list of visited tabs to keep track of visited tabs
   /// to avoid calling the api again on the same tab click
   List<int> visitedTabs = [];
+
+  /// to keep track of the active category
+  String activeCategory = "general";
+
+  /// list of categories to show in the tab bar
+  List<Tab> totalCategories = const [
+    Tab(text: "General"),
+    Tab(text: "Business"),
+    Tab(text: "Entertainment"),
+    Tab(text: "Health"),
+    Tab(text: "Science"),
+    Tab(text: "Sports"),
+    Tab(text: "Technology"),
+  ];
 
   /// page number for each category
   int pageGeneral = 1;
@@ -54,6 +70,9 @@ class _DiscoverTabState extends State<DiscoverTab>
   ScrollController scrollControllerScience = ScrollController();
   ScrollController scrollControllerSports = ScrollController();
   ScrollController scrollControllerTechnology = ScrollController();
+
+  /// text field controller
+  TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
@@ -87,42 +106,43 @@ class _DiscoverTabState extends State<DiscoverTab>
         /// index - 5 -> sports
         /// index - 6 -> technology
 
-        visitedTabs.add(0); // explicitly add 0 to visited tabs
+        /// get the category according to the index
+        switch (_tabController.index) {
+          case 0:
+            activeCategory = "general";
+            break;
+          case 1:
+            activeCategory = "business";
+            break;
+          case 2:
+            activeCategory = "entertainment";
+            break;
+          case 3:
+            activeCategory = "health";
+            break;
+          case 4:
+            activeCategory = "science";
+            break;
+          case 5:
+            activeCategory = "sports";
+            break;
+          case 6:
+            activeCategory = "technology";
+            break;
+        }
+
+        /// explicitly add 0 to visited tabs
+        visitedTabs.add(0);
+
+        /// check if the visited tabs list contains the current index
         if (!visitedTabs.contains(_tabController.index)) {
           visitedTabs.add(_tabController.index);
-
-          String category = "general";
-
-          /// get the category according to the index
-          switch (_tabController.index) {
-            case 0:
-              category = "general";
-              break;
-            case 1:
-              category = "business";
-              break;
-            case 2:
-              category = "entertainment";
-              break;
-            case 3:
-              category = "health";
-              break;
-            case 4:
-              category = "science";
-              break;
-            case 5:
-              category = "sports";
-              break;
-            case 6:
-              category = "technology";
-              break;
-          }
 
           /// fire the event to get the data
           _discoverBloc.add(
             DiscoverGetContentEvent(
               page: 1,
-              category: category,
+              category: activeCategory,
             ),
           );
         }
@@ -215,7 +235,7 @@ class _DiscoverTabState extends State<DiscoverTab>
     _discoverBloc = BlocProvider.of<DiscoverBloc>(context);
     return Scaffold(
       body: DefaultTabController(
-        length: 7,
+        length: totalCategories.length,
         child: NestedScrollView(
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
             return <Widget>[
@@ -223,28 +243,71 @@ class _DiscoverTabState extends State<DiscoverTab>
                 backgroundColor: Colors.transparent,
                 expandedHeight: 240.0,
                 floating: false,
+                snap: false,
                 pinned: false,
                 flexibleSpace: FlexibleSpaceBar(
-                    background: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Text(
-                        "Discover",
-                        style: AppStyles.headline4,
-                      ),
-                      Text(
-                        "News from all over the world",
-                        style: AppStyles.bodyText2,
-                      ),
-                      const SizedBox(height: 20),
-                      const CommonTextField(),
-                      const SizedBox(height: 10),
-                    ],
+                  background: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Text(
+                          "Discover",
+                          style: AppStyles.headline4,
+                        ),
+                        Text(
+                          "News from all over the world",
+                          style: AppStyles.bodyText2,
+                        ),
+                        const SizedBox(height: 20),
+                        CommonTextField(
+                          controller: searchController,
+                          onChanged: (value) {
+                            switch (activeCategory) {
+                              case "general":
+                                pageGeneral = 1;
+                                articlesGeneral = [];
+                                break;
+                              case "business":
+                                pageBusiness = 1;
+                                articlesBusiness = [];
+                                break;
+                              case "entertainment":
+                                pageEntertainment = 1;
+                                articlesEntertainment = [];
+                                break;
+                              case "health":
+                                pageHealth = 1;
+                                articlesHealth = [];
+                                break;
+                              case "science":
+                                pageScience = 1;
+                                articlesScience = [];
+                                break;
+                              case "sports":
+                                pageSports = 1;
+                                articlesSports = [];
+                                break;
+                              case "technology":
+                                pageTechnology = 1;
+                                articlesTechnology = [];
+                                break;
+                            }
+                            _discoverBloc.add(
+                              DiscoverGetContentEvent(
+                                page: 1,
+                                category: activeCategory,
+                                searchTerm: value,
+                              ),
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 10),
+                      ],
+                    ),
                   ),
-                )),
+                ),
               ),
               SliverPersistentHeader(
                 delegate: _SliverAppBarDelegate(
@@ -254,15 +317,7 @@ class _DiscoverTabState extends State<DiscoverTab>
                     labelColor: Colors.black87,
                     unselectedLabelColor: Colors.grey,
                     tabAlignment: TabAlignment.start,
-                    tabs: const [
-                      Tab(text: "General"),
-                      Tab(text: "Business"),
-                      Tab(text: "Entertainment"),
-                      Tab(text: "Health"),
-                      Tab(text: "Science"),
-                      Tab(text: "Sports"),
-                      Tab(text: "Technology"),
-                    ],
+                    tabs: totalCategories,
                   ),
                 ),
                 pinned: true,
@@ -270,25 +325,29 @@ class _DiscoverTabState extends State<DiscoverTab>
             ];
           },
           body: BlocBuilder<DiscoverBloc, DiscoverState>(
-              builder: (context, state) {
-            switch (state.runtimeType) {
-              case DiscoverLoadingState:
-                return const Center(child: CircularProgressIndicator());
-              case DiscoverFailureState:
-                return _buildTabBarView("", []);
-              case DiscoverSuccessState:
-                DiscoverSuccessState stateData = state as DiscoverSuccessState;
-                return _buildTabBarView(stateData.category, stateData.articles);
-              default:
-                return const Center(child: CircularProgressIndicator());
-            }
-          }),
+            builder: (context, state) {
+              switch (state.runtimeType) {
+                case DiscoverLoadingState:
+                  return const Center(child: CircularProgressIndicator());
+                case DiscoverFailureState:
+                  return _buildTabBarView("", []);
+                case DiscoverSuccessState:
+                  DiscoverSuccessState stateData =
+                      state as DiscoverSuccessState;
+                  return _buildTabBarView(
+                      stateData.category, stateData.articles);
+                default:
+                  return const Center(child: CircularProgressIndicator());
+              }
+            },
+          ),
         ),
       ),
     );
   }
 
   Widget _buildTabBarView(String category, List<Articles> articles) {
+    /// add the articles to the list according to the category
     switch (category) {
       case "general":
         articlesGeneral.addAll(articles);
@@ -361,9 +420,23 @@ class _DiscoverTabState extends State<DiscoverTab>
       child: ListView.builder(
         controller: controller,
         physics: const BouncingScrollPhysics(),
-        itemCount: articles.length,
+        itemCount: articles.length + 1,
         itemBuilder: (context, index) {
+          /// show the loader at the end of the list
+          if (index == articles.length) {
+            return const Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 20),
+                child: CircularProgressIndicator(),
+              ),
+            );
+          }
+
+          /// show the list item
           return ListTile(
+            onTap: () {
+              context.push(NewsDetailScreen(article: articles[index]));
+            },
             leading: ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: Image.network(
@@ -377,13 +450,30 @@ class _DiscoverTabState extends State<DiscoverTab>
               articles[index].title ?? "",
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
+              style: AppStyles.bodyText2.copyWith(fontWeight: FontWeight.bold),
             ),
             subtitle: Row(
               children: [
-                const Icon(Icons.access_time_outlined, size: 15),
-                const SizedBox(width: 5),
-                Text(DateTimeHelper.getHoursAgo(
-                    articles[index].publishedAt.toString())),
+                /// show the time in hours ago
+                const Icon(Icons.access_time_outlined, size: 12),
+                const SizedBox(width: 2),
+                Text(
+                  DateTimeHelper.getHoursAgo(
+                    articles[index].publishedAt.toString(),
+                  ),
+                  style: AppStyles.caption,
+                ),
+
+                /// empty space
+                const SizedBox(width: 20),
+
+                /// show the author name
+                const Icon(Icons.person_outlined, size: 14),
+                const SizedBox(width: 2),
+                Text(
+                  "by ${articles[index].source?.name ?? ""}",
+                  style: AppStyles.caption,
+                ),
               ],
             ),
           );
@@ -425,9 +515,9 @@ class _DiscoverTabState extends State<DiscoverTab>
     }
     _discoverBloc.add(
       DiscoverGetContentEvent(
-        page: 1,
-        category: category,
-      ),
+          page: 1,
+          category: category,
+          searchTerm: searchController.text.trim().toString()),
     );
   }
 }
@@ -448,6 +538,7 @@ class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
       BuildContext context, double shrinkOffset, bool overlapsContent) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10),
+      color: Colors.white,
       child: _tabBar,
     );
   }

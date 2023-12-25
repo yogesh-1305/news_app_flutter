@@ -22,7 +22,9 @@ class DiscoverBloc extends Bloc<DiscoverEvents, DiscoverState> {
       emit(const DiscoverPaginationLoadingState());
     }*/
     final response = await _discoverRepo.getDiscoverContent(
-        page: event.page, category: event.category);
+        page: event.page,
+        category: event.category,
+        searchTerms: event.searchTerm);
     if (response.status == "ok") {
       emit(DiscoverSuccessState(
           category: event.category, articles: response.articles ?? []));

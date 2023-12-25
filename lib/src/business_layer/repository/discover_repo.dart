@@ -11,12 +11,15 @@ class DiscoverRepo {
     int pageSize = 10,
     int page = 1,
     String category = "general",
+    String searchTerms = "",
   }) async {
     try {
       final queryParams = {
+        "country": "us",
         "category": category,
         "pageSize": pageSize,
         "page": page,
+        "q": searchTerms,
       };
       TopHeadlinesResponse response = await AppNetwork().request(
         url: "top-headlines",
