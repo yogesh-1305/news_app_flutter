@@ -12,7 +12,6 @@ import 'package:news_app_flutter/src/data_layer/res/app_colors.dart';
 import 'package:news_app_flutter/src/data_layer/res/app_styles.dart';
 import 'package:news_app_flutter/src/ui_layer/common/base_widget.dart';
 import 'package:news_app_flutter/src/ui_layer/screens/news_detail_screen.dart';
-import 'package:news_app_flutter/src/ui_layer/screens/view_all_screen.dart';
 
 class HomeTab extends StatefulWidget {
   const HomeTab({super.key});
@@ -43,26 +42,8 @@ class _HomeTabState extends State<HomeTab> {
     _homeBloc = BlocProvider.of<HomeBloc>(context);
 
     /// Return the BaseWidget
-    return BlocListener(
-      bloc: _homeBloc,
-      listenWhen: (previous, current) {
-        return current is HomeNavigateToNewsDetailState ||
-            current is HomeNavigateToViewAllNewsState;
-      },
-      listener: (context, state) {
-        switch (state.runtimeType) {
-          case HomeNavigateToNewsDetailState:
-            final article = (state as HomeNavigateToNewsDetailState).article;
-            context.push(NewsDetailScreen(article: article));
-            break;
-          case HomeNavigateToViewAllNewsState:
-            context.push(const ViewAllScreen());
-            break;
-        }
-      },
-      child: BaseWidget(
-        body: _buildBody(context),
-      ),
+    return BaseWidget(
+      body: _buildBody(context),
     );
   }
 
@@ -164,7 +145,7 @@ class _HomeTabState extends State<HomeTab> {
                   ),
                   TextButton(
                     onPressed: () {
-                      _homeBloc.add(HomeNewsItemTapEvent(article: article));
+                      context.push(NewsDetailScreen(article: article));
                     },
                     style: TextButton.styleFrom(
                       padding: const EdgeInsets.all(0),
@@ -211,9 +192,7 @@ class _HomeTabState extends State<HomeTab> {
                 style: AppStyles.headline5,
               ),
               TextButton(
-                onPressed: () {
-                  _homeBloc.add(HomeViewAllNewsTapEvent(category: title));
-                },
+                onPressed: () {},
                 child: Text(
                   "View All",
                   style: AppStyles.bodyText1.copyWith(
@@ -243,7 +222,7 @@ class _HomeTabState extends State<HomeTab> {
         itemBuilder: (context, index) {
           return GestureDetector(
             onTap: () {
-              _homeBloc.add(HomeNewsItemTapEvent(article: data[index]));
+              context.push(NewsDetailScreen(article: data[index]));
             },
             child: _horizontalListItem(data[index]),
           );

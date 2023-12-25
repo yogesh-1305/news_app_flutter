@@ -10,8 +10,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   HomeBloc() : super(HomeInitial()) {
     on<HomeInitialEvent>(homeInitialState);
-    on<HomeNewsItemTapEvent>(homeNewsItemTapEvent);
-    on<HomeViewAllNewsTapEvent>(homeViewAllTapEvent);
   }
 
   Future<FutureOr<void>> homeInitialState(
@@ -24,15 +22,5 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     } else {
       emit(HomeFailureState(exceptionType: response.exceptionType));
     }
-  }
-
-  Future<FutureOr<void>> homeNewsItemTapEvent(
-      HomeNewsItemTapEvent event, Emitter<HomeState> emit) async {
-    emit(HomeNavigateToNewsDetailState(article: event.article));
-  }
-
-  Future<FutureOr<void>> homeViewAllTapEvent(
-      HomeViewAllNewsTapEvent event, Emitter<HomeState> emit) async {
-    emit(HomeNavigateToViewAllNewsState(category: event.category));
   }
 }

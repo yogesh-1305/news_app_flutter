@@ -6,14 +6,10 @@ abstract class HomeEvent {
 
 class HomeInitialEvent extends HomeEvent {}
 
-class HomeNewsItemTapEvent extends HomeEvent {
-  final Articles article;
+class HomeLoadingEvent extends HomeEvent {}
 
-  HomeNewsItemTapEvent({required this.article});
-}
+class HomeSuccessEvent extends HomeEvent {
+  final TopHeadlinesResponse response;
 
-class HomeViewAllNewsTapEvent extends HomeEvent {
-  final String category;
-
-  HomeViewAllNewsTapEvent({required this.category});
+  HomeSuccessEvent({required this.response});
 }
