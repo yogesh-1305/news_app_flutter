@@ -70,7 +70,7 @@ class _AppControllerState extends State<AppController>
           darkTheme: AppThemes.dark,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: Dashboard(),
+          home: const Dashboard(),
         ),
       ),
     );
