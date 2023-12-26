@@ -97,6 +97,7 @@ class _HomeTabState extends State<HomeTab> {
             CommonNewsHeader(
               localizations: _localizations,
               article: data.first,
+              showNewsOfTheDayTag: true,
             ),
 
             /// This is the horizontal list view

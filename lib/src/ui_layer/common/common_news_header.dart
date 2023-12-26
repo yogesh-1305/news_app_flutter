@@ -14,6 +14,7 @@ class CommonNewsHeader extends StatelessWidget {
     this.borderRadius,
     this.showLearnMoreButton = true,
     this.showBottomRoundContainer = false,
+    this.showNewsOfTheDayTag = false,
   });
 
   /// localizations object
@@ -28,7 +29,10 @@ class CommonNewsHeader extends StatelessWidget {
   /// show learn more button
   final bool showLearnMoreButton;
 
+  /// show bottom round container
   final bool showBottomRoundContainer;
+
+  final bool showNewsOfTheDayTag;
 
   @override
   Widget build(BuildContext context) {
@@ -80,7 +84,7 @@ class CommonNewsHeader extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             /// tag for the news
-            _tag(context),
+            if (showNewsOfTheDayTag) _tag(context),
 
             /// title of the news
             _title(context, article),

@@ -21,6 +21,7 @@ class NewsDetailScreen extends StatelessWidget {
 
   Widget _buildBody(BuildContext context) {
     return CustomScrollView(
+      physics: const BouncingScrollPhysics(),
       slivers: [
         SliverAppBar(
           expandedHeight: MediaQuery.sizeOf(context).height * 0.4,
