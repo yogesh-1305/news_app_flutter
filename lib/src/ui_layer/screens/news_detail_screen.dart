@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:news_app_flutter/src/business_layer/utils/extensions/context_extension.dart';
-import 'package:news_app_flutter/src/data_layer/models/response/TopHeadlinesResponse.dart';
+import 'package:news_app_flutter/src/data_layer/models/response/base_api_response.dart';
 import 'package:news_app_flutter/src/data_layer/res/app_styles.dart';
 import 'package:news_app_flutter/src/ui_layer/common/base_widget.dart';
 import 'package:news_app_flutter/src/ui_layer/common/common_news_header.dart';
-import 'package:news_app_flutter/src/ui_layer/common/common_web_view_screen.dart';
 
 class NewsDetailScreen extends StatelessWidget {
   const NewsDetailScreen({super.key, required this.article});
@@ -66,9 +64,8 @@ class NewsDetailScreen extends StatelessWidget {
                   onPressed: () {
                     /// navigate to the article urls
                     /// in the browser
-                    context.push(const CommonWebViewScreen());
                   },
-                  child: const Text("Read Full Article"),
+                  child: Text(AppLocalizations.of(context)!.read_full_article),
                 ),
               ),
             ],

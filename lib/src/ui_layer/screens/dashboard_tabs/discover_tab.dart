@@ -10,7 +10,7 @@ import 'package:news_app_flutter/src/business_layer/bloc/discover/discover_state
 import 'package:news_app_flutter/src/business_layer/utils/extensions/context_extension.dart';
 import 'package:news_app_flutter/src/business_layer/utils/helpers/date_time_helper.dart';
 import 'package:news_app_flutter/src/data_layer/constants/app_constants.dart';
-import 'package:news_app_flutter/src/data_layer/models/response/TopHeadlinesResponse.dart';
+import 'package:news_app_flutter/src/data_layer/models/response/base_api_response.dart';
 import 'package:news_app_flutter/src/data_layer/res/app_styles.dart';
 import 'package:news_app_flutter/src/ui_layer/common/common_text_field.dart';
 import 'package:news_app_flutter/src/ui_layer/common/sliver_delegates.dart';

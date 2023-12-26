@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:news_app_flutter/src/business_layer/utils/extensions/context_extension.dart';
-import 'package:news_app_flutter/src/data_layer/models/response/TopHeadlinesResponse.dart';
+import 'package:news_app_flutter/src/data_layer/models/response/base_api_response.dart';
 import 'package:news_app_flutter/src/data_layer/res/app_colors.dart';
 import 'package:news_app_flutter/src/data_layer/res/app_styles.dart';
 import 'package:news_app_flutter/src/ui_layer/screens/news_detail_screen.dart';

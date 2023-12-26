@@ -11,7 +11,6 @@ extension ExceptionExtensions on ExceptionType {
         "It is taking longer than usual, please try again later",
       ExceptionType.cancelException => "Request cancelled",
       ExceptionType.otherException => "Something went wrong",
-      _ => "Unknown error occurred, please try again later"
     };
   }
 }

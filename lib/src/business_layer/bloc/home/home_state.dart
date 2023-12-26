@@ -1,5 +1,5 @@
 import 'package:news_app_flutter/src/business_layer/network/exception_types.dart';
-import 'package:news_app_flutter/src/data_layer/models/response/TopHeadlinesResponse.dart';
+import 'package:news_app_flutter/src/data_layer/models/response/base_api_response.dart';
 
 abstract class HomeState {
   const HomeState();
