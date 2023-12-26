@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:news_app_flutter/src/business_layer/utils/extensions/context_extension.dart';
 import 'package:news_app_flutter/src/data_layer/models/response/TopHeadlinesResponse.dart';
 import 'package:news_app_flutter/src/data_layer/res/app_styles.dart';
 import 'package:news_app_flutter/src/ui_layer/common/base_widget.dart';
+import 'package:news_app_flutter/src/ui_layer/common/common_news_header.dart';
+import 'package:news_app_flutter/src/ui_layer/common/common_web_view_screen.dart';
 
 class NewsDetailScreen extends StatelessWidget {
   const NewsDetailScreen({super.key, required this.article});
@@ -22,65 +26,12 @@ class NewsDetailScreen extends StatelessWidget {
           expandedHeight: MediaQuery.sizeOf(context).height * 0.4,
           pinned: true,
           flexibleSpace: FlexibleSpaceBar(
-            background: Stack(
-              children: [
-                Hero(
-                  tag: article.urlToImage ?? "assd",
-                  child: Image.network(
-                    article.urlToImage ?? "https://picsum.photos/200/300",
-                    height: MediaQuery.sizeOf(context).height * 0.4,
-                    width: double.infinity,
-                    fit: BoxFit.fill,
-                  ),
-                ),
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  child: Container(
-                    decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                      colors: [
-                        Colors.black.withOpacity(1),
-                        Colors.transparent,
-                      ],
-                      begin: Alignment.bottomCenter,
-                      end: Alignment.topCenter,
-                    )),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 5),
-                          margin: const EdgeInsets.only(bottom: 10),
-                          decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.6),
-                            borderRadius: BorderRadius.circular(40),
-                          ),
-                          child: Text(
-                            "News of the Day",
-                            style:
-                                AppStyles.caption.copyWith(color: Colors.white),
-                          ),
-                        ),
-                        Container(
-                          height: 20,
-                          decoration: const BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(20),
-                              topRight: Radius.circular(20),
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+              background: CommonNewsHeader(
+                  localizations: AppLocalizations.of(context)!,
+                  showLearnMoreButton: false,
+                  article: article,
+                  showBottomRoundContainer: true,
+                  borderRadius: BorderRadius.circular(0))),
         ),
         SliverList(
           delegate: SliverChildListDelegate(
@@ -112,9 +63,9 @@ class NewsDetailScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(16.0),
                 child: ElevatedButton(
                   onPressed: () {
-                    /// navigate to the article url
+                    /// navigate to the article urls
                     /// in the browser
-                    // launch(article.url!);
+                    context.push(const CommonWebViewScreen());
                   },
                   child: const Text("Read Full Article"),
                 ),
