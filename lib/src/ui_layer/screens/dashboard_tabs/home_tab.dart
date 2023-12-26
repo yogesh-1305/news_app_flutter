@@ -12,6 +12,7 @@ import 'package:news_app_flutter/src/data_layer/models/response/TopHeadlinesResp
 import 'package:news_app_flutter/src/data_layer/res/app_colors.dart';
 import 'package:news_app_flutter/src/data_layer/res/app_styles.dart';
 import 'package:news_app_flutter/src/ui_layer/common/base_widget.dart';
+import 'package:news_app_flutter/src/ui_layer/screens/global_search_screen.dart';
 import 'package:news_app_flutter/src/ui_layer/screens/news_detail_screen.dart';
 
 class HomeTab extends StatefulWidget {
@@ -104,7 +105,7 @@ class _HomeTabState extends State<HomeTab> {
       child: Stack(
         children: [
           Image.network(
-            article.urlToImage ?? "",
+            article.urlToImage ?? "https://picsum.photos/200/300",
             width: double.infinity,
             height: MediaQuery.sizeOf(context).height * 0.45,
             fit: BoxFit.fill,
@@ -189,7 +190,9 @@ class _HomeTabState extends State<HomeTab> {
                 style: AppStyles.headline5,
               ),
               TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  context.push(const GlobalSearchScreen());
+                },
                 child: Text(
                   _localizations.view_all,
                   style: AppStyles.bodyText1.copyWith(

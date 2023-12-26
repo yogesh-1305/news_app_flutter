@@ -25,9 +25,9 @@ class NewsDetailScreen extends StatelessWidget {
             background: Stack(
               children: [
                 Hero(
-                  tag: article.urlToImage!,
+                  tag: article.urlToImage ?? "assd",
                   child: Image.network(
-                    article.urlToImage!,
+                    article.urlToImage ?? "https://picsum.photos/200/300",
                     height: MediaQuery.sizeOf(context).height * 0.4,
                     width: double.infinity,
                     fit: BoxFit.fill,

@@ -7,6 +7,9 @@ class CommonTextField extends StatelessWidget {
     required this.controller,
     required this.onChanged,
     this.onSuffixIconPressed,
+    this.fillColor = Colors.black12,
+    this.showSuffixIcon = false,
+    this.showPrefixIcon = false,
   });
 
   /// The controller for the text field
@@ -18,6 +21,15 @@ class CommonTextField extends StatelessWidget {
   /// on suffix icon pressed
   final Function? onSuffixIconPressed;
 
+  /// The color to fill the text field with
+  final Color fillColor;
+
+  /// show suffix icon
+  final bool showSuffixIcon;
+
+  /// show prefix icon
+  final bool showPrefixIcon;
+
   @override
   Widget build(BuildContext context) {
     return TextFormField(
@@ -28,24 +40,26 @@ class CommonTextField extends StatelessWidget {
       },
       decoration: InputDecoration(
         hintText: "Search",
-        prefixIcon: const Icon(Icons.search),
+        prefixIcon: showPrefixIcon ? const Icon(Icons.search) : null,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide.none,
         ),
         filled: true,
-        fillColor: Colors.grey[200],
-        suffixIcon: InkWell(
-          onTap: () {
-            if (onSuffixIconPressed != null) {
-              onSuffixIconPressed!();
-            }
-          },
-          child: const Icon(
-            Icons.filter_alt_outlined,
-            color: Colors.black,
-          ),
-        ),
+        fillColor: fillColor,
+        suffixIcon: showSuffixIcon
+            ? InkWell(
+                onTap: () {
+                  if (onSuffixIconPressed != null) {
+                    onSuffixIconPressed!();
+                  }
+                },
+                child: const Icon(
+                  Icons.filter_alt_outlined,
+                  color: Colors.black,
+                ),
+              )
+            : null,
       ),
     );
   }

@@ -7,6 +7,9 @@ class AppConstants {
   static const String sports = "sports";
   static const String technology = "technology";
 
+  /// hero tags
+  static const String heroTagSearch = "heroTagSearch";
+
   static String getDiscoverCategoryName(int index) {
     switch (index) {
       case 0:

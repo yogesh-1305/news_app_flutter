@@ -4,6 +4,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:news_app_flutter/src/business_layer/bloc/dashboard/dashboard_cubit.dart';
 import 'package:news_app_flutter/src/business_layer/bloc/discover/discover_bloc.dart';
+import 'package:news_app_flutter/src/business_layer/bloc/global_search/global_search_bloc.dart';
 import 'package:news_app_flutter/src/business_layer/bloc/home/home_bloc.dart';
 import 'package:news_app_flutter/src/business_layer/utils/helpers/log_helper.dart';
 import 'package:news_app_flutter/src/data_layer/res/app_themes.dart';
@@ -70,6 +71,9 @@ class _AppControllerState extends State<AppController>
           ),
           BlocProvider<DiscoverBloc>(
             create: (BuildContext context) => DiscoverBloc(),
+          ),
+          BlocProvider<GlobalSearchBloc>(
+            create: (BuildContext context) => GlobalSearchBloc(),
           ),
         ],
         child: MaterialApp(

@@ -13,6 +13,7 @@ import 'package:news_app_flutter/src/data_layer/constants/app_constants.dart';
 import 'package:news_app_flutter/src/data_layer/models/response/TopHeadlinesResponse.dart';
 import 'package:news_app_flutter/src/data_layer/res/app_styles.dart';
 import 'package:news_app_flutter/src/ui_layer/common/common_text_field.dart';
+import 'package:news_app_flutter/src/ui_layer/screens/global_search_screen.dart';
 import 'package:news_app_flutter/src/ui_layer/screens/news_detail_screen.dart';
 
 class DiscoverTab extends StatefulWidget {
@@ -262,6 +263,8 @@ class _DiscoverTabState extends State<DiscoverTab>
                         ),
                         const SizedBox(height: 20),
                         CommonTextField(
+                          showPrefixIcon: true,
+                          showSuffixIcon: true,
                           controller: searchController,
                           onChanged: _handleTextFieldOnChanged,
                           onSuffixIconPressed: _handleSearchFilterIconTap,
@@ -485,6 +488,9 @@ class _DiscoverTabState extends State<DiscoverTab>
 
   void _handleSearchFilterIconTap() {
     debugPrint("Search filter icon tapped");
+    context.push(GlobalSearchScreen(
+      searchTerm: searchController.text.trim().toString(),
+    ));
   }
 
   void triggerPullToRefresh(String category) {

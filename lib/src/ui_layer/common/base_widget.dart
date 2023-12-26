@@ -15,6 +15,7 @@ class BaseWidget extends StatelessWidget {
     this.rightSafeArea = true,
     this.appBar,
     this.bottomSheet,
+    this.endDrawer,
   }) : super(key: key);
 
   final Widget body;
@@ -28,10 +29,12 @@ class BaseWidget extends StatelessWidget {
   final bool rightSafeArea;
   final PreferredSizeWidget? appBar;
   final Widget? bottomSheet;
+  final Widget? endDrawer;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: key,
       bottomSheet: bottomSheet,
       backgroundColor: backgroundColor,
       body: SafeArea(
@@ -42,6 +45,7 @@ class BaseWidget extends StatelessWidget {
           child: body),
       bottomNavigationBar: bottomNavigationBar,
       appBar: appBar,
+      endDrawer: endDrawer,
     );
   }
 }

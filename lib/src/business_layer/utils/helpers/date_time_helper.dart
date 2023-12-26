@@ -11,6 +11,20 @@ class DateTimeHelper {
     }
   }
 
+  static String convertDateFormat(
+      {required String inputDate,
+      String? inputFormat = "dd MMM yyyy",
+      String? outputFormat = "yyyy-MM-dd"}) {
+    if (inputDate.isEmpty) return "";
+    // Parse the input date in "dd MMM yyyy" format
+    DateTime parsedDate = DateFormat(inputFormat).parse(inputDate);
+
+    // Format the date in "yyyy-MM-dd" format
+    String formattedDate = DateFormat(outputFormat).format(parsedDate);
+
+    return formattedDate;
+  }
+
   static String utcToLocalTime(String utcTime,
       {String? format = 'EEE, dd MMM yy'}) {
     final utcDateTime = DateTime.parse(utcTime);
