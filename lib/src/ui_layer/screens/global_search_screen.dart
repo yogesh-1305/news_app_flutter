@@ -108,7 +108,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
       elevation: 0,
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       title: CommonTextField(
         fillColor: Colors.transparent,
         controller: _searchController,
@@ -559,6 +559,10 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
                 children: [
                   Text(_localizations.from, style: AppStyles.caption),
                   ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                    ),
                     onPressed: () async {
                       (String?, String?) selectedDate =
                           await DialogUtil.showDatePickerDialog(context);
@@ -577,6 +581,10 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
                 children: [
                   Text(_localizations.to_colon, style: AppStyles.caption),
                   ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                    ),
                     onPressed: () async {
                       (String?, String?) selectedDate =
                           await DialogUtil.showDatePickerDialog(context);

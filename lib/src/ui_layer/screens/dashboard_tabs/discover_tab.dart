@@ -336,7 +336,7 @@ class _DiscoverTabState extends State<DiscoverTab>
         TabBar(
           controller: _tabController,
           isScrollable: true,
-          labelColor: Colors.black87,
+          labelColor: Theme.of(context).colorScheme.onPrimary,
           unselectedLabelColor: Colors.grey,
           tabAlignment: TabAlignment.start,
           tabs: totalCategories,

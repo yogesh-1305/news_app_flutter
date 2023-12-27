@@ -16,7 +16,7 @@ class SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
       BuildContext context, double shrinkOffset, bool overlapsContent) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10),
-      color: Colors.white,
+      color: Theme.of(context).colorScheme.primary,
       child: _tabBar,
     );
   }

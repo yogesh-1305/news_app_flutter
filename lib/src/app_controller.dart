@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:news_app_flutter/src/bloc_registration.dart';
+import 'package:news_app_flutter/src/business_layer/bloc/theme/theme_cubit.dart';
 import 'package:news_app_flutter/src/business_layer/utils/helpers/log_helper.dart';
 import 'package:news_app_flutter/src/data_layer/res/app_themes.dart';
 import 'package:news_app_flutter/src/ui_layer/screens/dashboard.dart';
@@ -60,18 +61,21 @@ class _AppControllerState extends State<AppController>
       },
       child: MultiBlocProvider(
         providers: BlocRegistration.providers,
-        child: MaterialApp(
-          onGenerateTitle: (BuildContext context) =>
-              AppLocalizations.of(context)!.app_name,
-          debugShowCheckedModeBanner: false,
-          navigatorKey: navigatorKey,
-          themeMode: ThemeMode.dark,
-          theme: AppThemes.light,
-          darkTheme: AppThemes.dark,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: const Dashboard(),
-        ),
+        child: BlocBuilder<ThemeCubit, ThemeMode>(
+            builder: (context, ThemeMode themeMode) {
+          return MaterialApp(
+            onGenerateTitle: (BuildContext context) =>
+                AppLocalizations.of(context)!.app_name,
+            debugShowCheckedModeBanner: false,
+            navigatorKey: navigatorKey,
+            themeMode: themeMode,
+            theme: AppThemes.light,
+            darkTheme: AppThemes.dark,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: const Dashboard(),
+          );
+        }),
       ),
     );
   }
