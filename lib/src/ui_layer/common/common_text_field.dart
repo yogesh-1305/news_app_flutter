@@ -38,6 +38,7 @@ class CommonTextField extends StatelessWidget {
       onChanged: (value) {
         onChanged!(value);
       },
+      cursorColor: Theme.of(context).colorScheme.onPrimary,
       decoration: InputDecoration(
         hintText: "Search",
         prefixIcon: showPrefixIcon ? const Icon(Icons.search) : null,
@@ -54,9 +55,9 @@ class CommonTextField extends StatelessWidget {
                     onSuffixIconPressed!();
                   }
                 },
-                child: const Icon(
+                child: Icon(
                   Icons.filter_alt_outlined,
-                  color: Colors.black,
+                  color: Theme.of(context).colorScheme.onPrimary,
                 ),
               )
             : null,

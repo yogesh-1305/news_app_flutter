@@ -8,7 +8,7 @@ import 'package:news_app_flutter/src/business_layer/network/exception_types.dart
 import 'package:news_app_flutter/src/business_layer/network/http_response_code.dart';
 import 'package:news_app_flutter/src/business_layer/utils/helpers/flavor_configuration_helper.dart';
 import 'package:news_app_flutter/src/business_layer/utils/helpers/log_helper.dart';
-import 'package:news_app_flutter/src/data_layer/models/response/TopHeadlinesResponse.dart';
+import 'package:news_app_flutter/src/data_layer/models/response/base_api_response.dart';
 
 class AppNetwork {
   static AppNetwork? _instance;

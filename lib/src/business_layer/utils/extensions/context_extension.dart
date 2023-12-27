@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-extension contextExtension on BuildContext {
+extension ContextExtension on BuildContext {
   void showSuccessSnackBar(String message) {
     ScaffoldMessenger.of(this).showSnackBar(
       SnackBar(
         backgroundColor: Colors.green,
-        content: Text(message ?? ""),
+        content: Text(message),
         duration: const Duration(seconds: 3), // Adjust the duration as needed
       ),
     );
@@ -15,7 +15,7 @@ extension contextExtension on BuildContext {
     ScaffoldMessenger.of(this).showSnackBar(
       SnackBar(
         backgroundColor: Colors.red,
-        content: Text(message ?? ""),
+        content: Text(message),
         duration: const Duration(seconds: 3), // Adjust the duration as needed
       ),
     );

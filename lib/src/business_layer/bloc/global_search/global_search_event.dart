@@ -14,14 +14,6 @@ class GlobalSearchEditFilterEvent extends GlobalSearchEvent {
   });
 }
 
-class GlobalSearchEventClearFilters extends GlobalSearchEvent {
-  final String searchTerm;
-
-  GlobalSearchEventClearFilters({required this.searchTerm});
-}
-
-class GlobalSearchEventClearSearch extends GlobalSearchEvent {}
-
 class GlobalSearchEventDoSearch extends GlobalSearchEvent {
   final int page;
   final String searchTerm;

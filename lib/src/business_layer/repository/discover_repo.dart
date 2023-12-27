@@ -1,11 +1,13 @@
+import 'package:news_app_flutter/src/business_layer/network/api_constants.dart';
 import 'package:news_app_flutter/src/business_layer/network/app_network.dart';
 import 'package:news_app_flutter/src/business_layer/network/exception_types.dart';
 import 'package:news_app_flutter/src/business_layer/network/http_response_code.dart';
+import 'package:news_app_flutter/src/business_layer/utils/helpers/location_helper.dart';
 import 'package:news_app_flutter/src/business_layer/utils/helpers/log_helper.dart';
-import 'package:news_app_flutter/src/data_layer/models/response/TopHeadlinesResponse.dart';
+import 'package:news_app_flutter/src/data_layer/models/response/base_api_response.dart';
 
 class DiscoverRepo {
-  final String _tag = "Home Repository =====> ";
+  final String _tag = "Discover Repository =====> ";
 
   Future<TopHeadlinesResponse> getDiscoverContent({
     int pageSize = 10,
@@ -15,14 +17,14 @@ class DiscoverRepo {
   }) async {
     try {
       final queryParams = {
-        "country": "us",
+        "country": await LocationHelper.getUserCountryCode(),
         "category": category,
         "pageSize": pageSize,
         "page": page,
         "q": searchTerms,
       };
       TopHeadlinesResponse response = await AppNetwork().request(
-        url: "top-headlines",
+        url: ApiConstants.topHeadlines,
         queryParameter: queryParams,
         requestType: HttpRequestMethods.get,
       );

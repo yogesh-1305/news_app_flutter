@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:news_app_flutter/src/business_layer/bloc/dashboard/dashboard_cubit.dart';
-import 'package:news_app_flutter/src/business_layer/bloc/discover/discover_bloc.dart';
-import 'package:news_app_flutter/src/business_layer/bloc/global_search/global_search_bloc.dart';
-import 'package:news_app_flutter/src/business_layer/bloc/home/home_bloc.dart';
+import 'package:news_app_flutter/src/bloc_registration.dart';
+import 'package:news_app_flutter/src/business_layer/bloc/theme/theme_cubit.dart';
+import 'package:news_app_flutter/src/business_layer/database/user_state_hive_helper.dart';
 import 'package:news_app_flutter/src/business_layer/utils/helpers/log_helper.dart';
 import 'package:news_app_flutter/src/data_layer/res/app_themes.dart';
 import 'package:news_app_flutter/src/ui_layer/screens/dashboard.dart';
@@ -56,40 +55,38 @@ class _AppControllerState extends State<AppController>
   }
 
   Widget _buildApp(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        /// close the keyboard if tapped anywhere on the app
-        FocusManager.instance.primaryFocus?.unfocus();
-      },
-      child: MultiBlocProvider(
-        providers: [
-          BlocProvider<DashboardCubit>(
-            create: (BuildContext context) => DashboardCubit(),
-          ),
-          BlocProvider<HomeBloc>(
-            create: (BuildContext context) => HomeBloc(),
-          ),
-          BlocProvider<DiscoverBloc>(
-            create: (BuildContext context) => DiscoverBloc(),
-          ),
-          BlocProvider<GlobalSearchBloc>(
-            create: (BuildContext context) => GlobalSearchBloc(),
-          ),
-        ],
-        child: MaterialApp(
-          title: 'News App',
-          debugShowCheckedModeBanner: false,
-          navigatorKey: navigatorKey,
-          themeMode: ThemeMode.system,
-          theme: AppThemes.light,
-          darkTheme: AppThemes.dark,
-          onGenerateTitle: (BuildContext context) =>
-              AppLocalizations.of(context)!.app_name,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: Dashboard(),
-        ),
-      ),
-    );
+    return FutureBuilder<ThemeMode>(
+        future: UserStateHiveHelper.instance.getThemeMode(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return GestureDetector(
+              onTap: () {
+                /// close the keyboard if tapped anywhere on the app
+                FocusManager.instance.primaryFocus?.unfocus();
+              },
+              child: MultiBlocProvider(
+                providers: BlocRegistration.providers,
+                child: BlocBuilder<ThemeCubit, ThemeMode?>(
+                    builder: (context, ThemeMode? themeMode) {
+                  return MaterialApp(
+                    onGenerateTitle: (BuildContext context) =>
+                        AppLocalizations.of(context)!.app_name,
+                    debugShowCheckedModeBanner: false,
+                    navigatorKey: navigatorKey,
+                    themeMode: themeMode ?? snapshot.data ?? ThemeMode.light,
+                    theme: AppThemes.light,
+                    darkTheme: AppThemes.dark,
+                    localizationsDelegates:
+                        AppLocalizations.localizationsDelegates,
+                    supportedLocales: AppLocalizations.supportedLocales,
+                    home: const Dashboard(),
+                  );
+                }),
+              ),
+            );
+          } else {
+            return const SizedBox();
+          }
+        });
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:news_app_flutter/gen/assets.gen.dart';
 import 'package:news_app_flutter/src/business_layer/bloc/global_search/global_search_bloc.dart';
 import 'package:news_app_flutter/src/business_layer/bloc/global_search/global_search_event.dart';
@@ -8,17 +9,24 @@ import 'package:news_app_flutter/src/business_layer/bloc/global_search/global_se
 import 'package:news_app_flutter/src/business_layer/utils/dialog_util.dart';
 import 'package:news_app_flutter/src/business_layer/utils/extensions/context_extension.dart';
 import 'package:news_app_flutter/src/business_layer/utils/helpers/date_time_helper.dart';
-import 'package:news_app_flutter/src/data_layer/models/response/TopHeadlinesResponse.dart';
+import 'package:news_app_flutter/src/data_layer/models/response/base_api_response.dart';
 import 'package:news_app_flutter/src/data_layer/res/app_styles.dart';
+import 'package:news_app_flutter/src/ui_layer/common/common_image_widget.dart';
 import 'package:news_app_flutter/src/ui_layer/common/common_text_field.dart';
 import 'package:news_app_flutter/src/ui_layer/screens/news_detail_screen.dart';
 
+/// This is the global search screen
+/// purpose - to show the search results from all over the world
+/// user can search for news and add filters also
 class GlobalSearchScreen extends StatefulWidget {
   const GlobalSearchScreen({
     super.key,
     this.searchTerm = "",
   });
 
+  /// search term
+  /// this is the search term entered by the user
+  /// from the discover tab
   final String searchTerm;
 
   @override
@@ -38,6 +46,8 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
   /// global search bloc
   late GlobalSearchBloc _globalSearchBloc;
 
+  late AppLocalizations _localizations;
+
   /// filter variables
   String? sortBy;
   String? fromDate;
@@ -52,11 +62,14 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
   @override
   void initState() {
     _searchController.text = widget.searchTerm;
+
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+      /// add the initial event to the bloc
       _globalSearchBloc.add(
           GlobalSearchEventDoSearch(searchTerm: widget.searchTerm, page: page));
     });
 
+    /// add scroll listener for pagination
     addScrollListener();
 
     super.initState();
@@ -66,6 +79,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
+        /// call the api with the next page number
         _globalSearchBloc.add(GlobalSearchEventDoSearch(
             page: ++page,
             searchTerm: _searchController.text,
@@ -78,6 +92,10 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    /// Initialize the localizations
+    _localizations = AppLocalizations.of(context)!;
+
+    /// Initialize the bloc
     _globalSearchBloc = BlocProvider.of<GlobalSearchBloc>(context);
     return Scaffold(
       key: _scaffoldKey,
@@ -90,7 +108,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
       elevation: 0,
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       title: CommonTextField(
         fillColor: Colors.transparent,
         controller: _searchController,
@@ -147,7 +165,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
               const SizedBox(height: 4),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Text("Applied Filters:",
+                child: Text(_localizations.applied_filters_colon,
                     style: AppStyles.caption
                         .copyWith(fontWeight: FontWeight.bold)),
               ),
@@ -187,43 +205,58 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
 
   Widget _newsItemsList() {
     return BlocBuilder<GlobalSearchBloc, GlobalSearchState>(
-        buildWhen: (previous, current) {
-      return current is! GlobalSearchFilterState;
-    }, builder: (context, state) {
-      switch (state.runtimeType) {
-        case GlobalSearchInitialState:
-          return Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Assets.animations.phoneGlobeAnim.lottie(),
-                const SizedBox(height: 20),
-                Text(
-                  "Search for news from all over the world.",
-                  style: AppStyles.headline6,
-                ),
-              ],
-            ),
-          );
-        case GlobalSearchLoading:
-          return Center(
-            child: Assets.animations.searchAnim.lottie(),
-          );
-        case GlobalSearchSuccess:
-          List<Articles> articles = (state as GlobalSearchSuccess).articles;
-          return _newsItemsListView(articles);
-        case GlobalSearchFailure:
-          return Center(
-            child: Text(
-              (state as GlobalSearchFailure).exceptionMessage,
-              style: AppStyles.bodyText1,
-            ),
-          );
-        default:
-          return const SizedBox();
-      }
-    });
+      buildWhen: (previous, current) {
+        return current is! GlobalSearchFilterState;
+      },
+      builder: (context, state) {
+        switch (state.runtimeType) {
+          case GlobalSearchInitialState:
+
+            /// initial view - show animation and text
+            return _initialView();
+          case GlobalSearchLoading:
+
+            /// show loading animation
+            return Center(child: Assets.animations.searchAnim.lottie());
+          case GlobalSearchSuccess:
+
+            /// show news items list
+            List<Articles> articles = (state as GlobalSearchSuccess).articles;
+            return _newsItemsListView(articles);
+          case GlobalSearchFailure:
+
+            /// show error animation
+            return Expanded(
+                child: Center(child: Assets.animations.noDataAnim.lottie()));
+          default:
+
+            /// show loading animation
+            return Center(child: Assets.animations.searchAnim.lottie());
+        }
+      },
+    );
+  }
+
+  /// initial view of the screen
+  /// shows an animation and a text
+  /// this is done because news-api does not allow to search without a search term
+  Widget _initialView() {
+    return Expanded(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(child: Assets.animations.phoneGlobeAnim.lottie()),
+          const SizedBox(height: 20),
+          Text(
+            _localizations.search_for_news_from_all_over_the_world,
+            style: AppStyles.headline6,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 20),
+        ],
+      ),
+    );
   }
 
   Widget _newsItemsListView(List<Articles> articles) {
@@ -233,7 +266,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
         padding: const EdgeInsets.all(20),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          childAspectRatio: 0.68,
+          childAspectRatio: 0.65,
           crossAxisSpacing: 10,
           mainAxisSpacing: 10,
         ),
@@ -251,77 +284,92 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
                 ),
               );
             },
-            child: Card(
-              elevation: 4,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: Column(
-                  children: [
-                    Image.network(
-                      articles[index].urlToImage ??
-                          "https://picsum.photos/300/200",
-                      fit: BoxFit.fill,
-                      width: double.infinity,
-                      height: 100,
-                    ),
-                    const SizedBox(height: 10),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            articles[index].title ?? "News Title",
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: AppStyles.headline6,
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            articles[index].description ?? "News Description",
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: AppStyles.caption,
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            DateTimeHelper.getHoursAgo(
-                                articles[index].publishedAt ?? "2021-09-01"),
-                            style: AppStyles.caption,
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            "By ${articles[index].author ?? "Unknown"}",
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: AppStyles.caption
-                                .copyWith(fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(height: 4),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            child: _newsGridItem(articles[index]),
           );
         },
       ),
     );
   }
 
+  /// news grid item
+  /// shows the news image, title, description, author and published date
+  Widget _newsGridItem(Articles article) {
+    return Card(
+      elevation: 4,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: Column(
+          children: [
+            CommonImageWidget(
+              url: article.urlToImage,
+              width: double.infinity,
+              height: 100,
+            ),
+            const SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  /// title
+                  Text(
+                    article.title ?? "N/A",
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppStyles.headline6,
+                  ),
+                  const SizedBox(height: 4),
+
+                  /// description
+                  Text(
+                    article.description ?? "N/A",
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppStyles.caption,
+                  ),
+                  const SizedBox(height: 4),
+
+                  /// published date
+                  Text(
+                    DateTimeHelper.getHoursAgo(article.publishedAt ?? "N/A"),
+                    style: AppStyles.caption,
+                  ),
+                  const SizedBox(height: 4),
+
+                  /// author
+                  Text(
+                    "By ${article.author ?? "Unknown"}",
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style:
+                        AppStyles.caption.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 4),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// filters drawer
+  /// shows the filters drawer when the filter button is clicked
+  /// this drawer is shown on the right side of the screen
+  /// this drawer contains the sort by list and date filters
+  /// when the user applies filters, the search is done with the filters
+  /// when the user clears all filters, the search is done without any filters
   Widget _buildFiltersDrawer() {
     return BlocBuilder<GlobalSearchBloc, GlobalSearchState>(
         buildWhen: (previous, current) {
-      if (current is GlobalSearchFilterState) {
-        return true;
-      }
-      return false;
+      return current is GlobalSearchFilterState;
     }, builder: (context, state) {
       if (state.runtimeType == GlobalSearchFilterState) {
+        /// show the drawer when the state is GlobalSearchFilterState
         return _endDrawerWidget(state as GlobalSearchFilterState);
       } else {
+        /// hide the drawer when the state is not GlobalSearchFilterState
         return const SizedBox();
       }
     });
@@ -329,27 +377,29 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
 
   Widget _endDrawerWidget(GlobalSearchFilterState state) {
     return Drawer(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          /// empty space
-          const SizedBox(height: 30),
+      child: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            /// empty space
+            const SizedBox(height: 30),
 
-          /// drawer header buttons
-          _drawerHeaderButtons(state),
+            /// drawer header buttons
+            _drawerHeaderButtons(state),
 
-          /// horizontal divider
-          const Divider(),
+            /// horizontal divider
+            const Divider(),
 
-          /// sort by list
-          ..._buildSortByList(state),
+            /// sort by list
+            ..._buildSortByList(state),
 
-          /// empty space
-          const SizedBox(height: 10),
+            /// empty space
+            const SizedBox(height: 10),
 
-          /// date filters
-          ..._dateFilters(state),
-        ],
+            /// date filters
+            ..._dateFilters(state),
+          ],
+        ),
       ),
     );
   }
@@ -370,9 +420,9 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
             /// close the drawer
             _scaffoldKey.currentState!.closeEndDrawer();
           },
-          child: const Text(
-            "Clear All",
-            style: TextStyle(
+          child: Text(
+            _localizations.clear_all,
+            style: const TextStyle(
               color: Colors.red,
               fontWeight: FontWeight.w400,
             ),
@@ -399,9 +449,9 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
                 toDate: toDate));
             _scaffoldKey.currentState!.closeEndDrawer();
           },
-          child: const Text(
-            "Apply",
-            style: TextStyle(
+          child: Text(
+            _localizations.apply,
+            style: const TextStyle(
               color: Colors.blue,
               fontWeight: FontWeight.w600,
             ),
@@ -411,16 +461,20 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
     );
   }
 
+  /// sort by list
+  /// contains the list of sort by options
+  /// when the user selects an option, the search is done with the selected option
+  /// options are Relevance, Popularity and Published At
   List<Widget> _buildSortByList(GlobalSearchFilterState state) {
     int sortIndex = -1;
-    switch (state.sortBy) {
-      case "Relevance":
+    switch (state.sortBy?.toLowerCase()) {
+      case "relevancy":
         sortIndex = 0;
         break;
-      case "Popularity":
+      case "popularity":
         sortIndex = 1;
         break;
-      case "Published At":
+      case "publishedat":
         sortIndex = 2;
         break;
       default:
@@ -429,30 +483,52 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
     return [
       Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10),
-        child: Text("Sort by:", style: AppStyles.bodyText1),
+        child: Text(_localizations.sort_by, style: AppStyles.bodyText1),
       ),
       const SizedBox(height: 10),
-      _sortByListTile(state, "Relevance", "Sort by relevance", 0, sortIndex),
-      _sortByListTile(state, "Popularity", "Sort by popularity", 1, sortIndex),
-      _sortByListTile(
-          state, "Published At", "Sort by published date", 2, sortIndex),
+
+      /// relevancy
+      _sortByListTile(state, _localizations.relevancy,
+          _localizations.relevancy_desc, 0, sortIndex),
+
+      /// popularity
+      _sortByListTile(state, _localizations.popularity,
+          _localizations.popularity_desc, 1, sortIndex),
+
+      /// published at
+      _sortByListTile(state, _localizations.publishedAt,
+          _localizations.publishedAt_desc, 2, sortIndex),
     ];
   }
 
   Widget _sortByListTile(GlobalSearchFilterState state, String title,
       String desc, int index, int selectedIndex) {
+    String sortBy = "";
+    switch (index) {
+      case 0:
+        sortBy = "relevancy";
+        break;
+      case 1:
+        sortBy = "popularity";
+        break;
+      case 2:
+        sortBy = "publishedat";
+        break;
+      default:
+        sortBy = "";
+    }
     return ListTile(
       horizontalTitleGap: 10,
       minVerticalPadding: 0,
       minLeadingWidth: 0,
       onTap: () {
-        editFilter(title, state.fromDate, state.toDate);
+        editFilter(sortBy, state.fromDate, state.toDate);
       },
       leading: Radio<int>(
         value: selectedIndex,
         groupValue: index,
         onChanged: (int? value) {
-          editFilter(title, state.fromDate, state.toDate);
+          editFilter(sortBy, state.fromDate, state.toDate);
         },
       ),
       title: Text(
@@ -470,7 +546,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
     return [
       Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10),
-        child: Text("Filter by date:", style: AppStyles.bodyText1),
+        child: Text(_localizations.filter_by_date, style: AppStyles.bodyText1),
       ),
       const SizedBox(height: 10),
       Padding(
@@ -481,8 +557,12 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("From:", style: AppStyles.caption),
+                  Text(_localizations.from, style: AppStyles.caption),
                   ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                    ),
                     onPressed: () async {
                       (String?, String?) selectedDate =
                           await DialogUtil.showDatePickerDialog(context);
@@ -490,7 +570,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
                         editFilter(state.sortBy, selectedDate.$1, state.toDate);
                       }
                     },
-                    child: Text(state.fromDate ?? "Select Date"),
+                    child: Text(state.fromDate ?? _localizations.select_date),
                   ),
                 ],
               ),
@@ -499,8 +579,12 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("To:", style: AppStyles.caption),
+                  Text(_localizations.to_colon, style: AppStyles.caption),
                   ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                    ),
                     onPressed: () async {
                       (String?, String?) selectedDate =
                           await DialogUtil.showDatePickerDialog(context);
@@ -509,7 +593,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
                             state.sortBy, state.fromDate, selectedDate.$1);
                       }
                     },
-                    child: Text(state.toDate ?? "Select Date"),
+                    child: Text(state.toDate ?? _localizations.select_date),
                   ),
                 ],
               ),
@@ -521,10 +605,12 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
   }
 
   void editFilter(String? sortBy, String? fromDate, String? toDate) {
-    _globalSearchBloc.add(GlobalSearchEditFilterEvent(
-      sortBy: sortBy,
-      fromDate: fromDate,
-      toDate: toDate,
-    ));
+    _globalSearchBloc.add(
+      GlobalSearchEditFilterEvent(
+        sortBy: sortBy,
+        fromDate: fromDate,
+        toDate: toDate,
+      ),
+    );
   }
 }

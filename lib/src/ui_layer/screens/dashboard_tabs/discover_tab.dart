@@ -10,12 +10,21 @@ import 'package:news_app_flutter/src/business_layer/bloc/discover/discover_state
 import 'package:news_app_flutter/src/business_layer/utils/extensions/context_extension.dart';
 import 'package:news_app_flutter/src/business_layer/utils/helpers/date_time_helper.dart';
 import 'package:news_app_flutter/src/data_layer/constants/app_constants.dart';
-import 'package:news_app_flutter/src/data_layer/models/response/TopHeadlinesResponse.dart';
+import 'package:news_app_flutter/src/data_layer/models/response/base_api_response.dart';
 import 'package:news_app_flutter/src/data_layer/res/app_styles.dart';
+import 'package:news_app_flutter/src/ui_layer/common/common_image_widget.dart';
 import 'package:news_app_flutter/src/ui_layer/common/common_text_field.dart';
+import 'package:news_app_flutter/src/ui_layer/common/sliver_delegates.dart';
 import 'package:news_app_flutter/src/ui_layer/screens/global_search_screen.dart';
 import 'package:news_app_flutter/src/ui_layer/screens/news_detail_screen.dart';
 
+/// purpose - to show top headlines based on predefined categories
+/// this screen will be shown when the user clicks on the discover tab
+/// this screen contains a tab bar with 7 tabs
+/// each tab will show the top headlines of the category
+/// the categories are
+/// general, business, entertainment, health, science, sports, technology
+/// the user can also search for the news
 class DiscoverTab extends StatefulWidget {
   const DiscoverTab({super.key});
 
@@ -151,6 +160,7 @@ class _DiscoverTabState extends State<DiscoverTab>
     );
   }
 
+  /// below function will add the scroll listener to every scroll controller
   void addScrollListener() {
     scrollControllerGeneral.addListener(() {
       if (scrollControllerGeneral.position.pixels ==
@@ -240,69 +250,37 @@ class _DiscoverTabState extends State<DiscoverTab>
         child: NestedScrollView(
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
             return <Widget>[
-              SliverAppBar(
-                backgroundColor: Colors.transparent,
-                expandedHeight: 240.0,
-                floating: false,
-                snap: false,
-                pinned: false,
-                flexibleSpace: FlexibleSpaceBar(
-                  background: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Text(
-                          _localizations.discover,
-                          style: AppStyles.headline4,
-                        ),
-                        Text(
-                          _localizations.news_from_all_over_the_world,
-                          style: AppStyles.bodyText2,
-                        ),
-                        const SizedBox(height: 20),
-                        CommonTextField(
-                          showPrefixIcon: true,
-                          showSuffixIcon: true,
-                          controller: searchController,
-                          onChanged: _handleTextFieldOnChanged,
-                          onSuffixIconPressed: _handleSearchFilterIconTap,
-                        ),
-                        const SizedBox(height: 10),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              SliverPersistentHeader(
-                delegate: _SliverAppBarDelegate(
-                  TabBar(
-                    controller: _tabController,
-                    isScrollable: true,
-                    labelColor: Colors.black87,
-                    unselectedLabelColor: Colors.grey,
-                    tabAlignment: TabAlignment.start,
-                    tabs: totalCategories,
-                  ),
-                ),
-                pinned: true,
-              ),
+              /// app bar
+              /// contains the search text field
+              _appBar(context),
+
+              /// tab bar
+              /// contains the tab bar with 7 tabs
+              _tabPersistentHeader(context),
             ];
           },
           body: BlocBuilder<DiscoverBloc, DiscoverState>(
             builder: (context, state) {
               switch (state.runtimeType) {
                 case DiscoverLoadingState:
+
+                  /// show the loader
                   return Center(child: Assets.animations.searchAnim.lottie());
                 case DiscoverFailureState:
+
+                  /// build tab bar with empty list
+                  /// this will show no data found animation
                   return _buildTabBarView("", []);
                 case DiscoverSuccessState:
+
+                  /// build tab bar with the data
                   DiscoverSuccessState stateData =
                       state as DiscoverSuccessState;
                   return _buildTabBarView(
                       stateData.category, stateData.articles);
                 default:
+
+                  /// show the loader by default
                   return Center(child: Assets.animations.searchAnim.lottie());
               }
             },
@@ -312,8 +290,65 @@ class _DiscoverTabState extends State<DiscoverTab>
     );
   }
 
+  Widget _appBar(BuildContext context) {
+    return SliverAppBar(
+      backgroundColor: Colors.transparent,
+      expandedHeight: 240.0,
+      flexibleSpace: FlexibleSpaceBar(
+        background: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Text(
+                _localizations.discover,
+                style: AppStyles.headline4,
+              ),
+              Text(
+                _localizations.news_from_all_over_the_world,
+                style: AppStyles.bodyText2,
+              ),
+              const SizedBox(height: 20),
+
+              /// search text field
+              CommonTextField(
+                showPrefixIcon: true,
+                showSuffixIcon: true,
+                controller: searchController,
+                onChanged: _handleTextFieldOnChanged,
+                onSuffixIconPressed: _handleSearchFilterIconTap,
+              ),
+              const SizedBox(height: 10),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// tab bar with 7 tabs
+  /// each tab will show the top headlines of the category
+  Widget _tabPersistentHeader(BuildContext context) {
+    return SliverPersistentHeader(
+      pinned: true,
+      delegate: SliverAppBarDelegate(
+        TabBar(
+          controller: _tabController,
+          isScrollable: true,
+          labelColor: Theme.of(context).colorScheme.onPrimary,
+          unselectedLabelColor: Colors.grey,
+          tabAlignment: TabAlignment.start,
+          tabs: totalCategories,
+        ),
+      ),
+    );
+  }
+
+  /// tab bar view
+  /// this will show the list of articles according to the category
   Widget _buildTabBarView(String category, List<Articles> articles) {
-    /// add the articles to the list according to the category
+    /// add the articles to the respective list according to the category
     switch (category) {
       case AppConstants.general:
         articlesGeneral.addAll(articles);
@@ -394,52 +429,58 @@ class _DiscoverTabState extends State<DiscoverTab>
             );
           }
 
-          /// show the list item
-          return ListTile(
-            onTap: () {
-              context.push(NewsDetailScreen(article: articles[index]));
-            },
-            leading: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: Image.network(
-                articles[index].urlToImage ?? "https://picsum.photos/200/300",
-                width: 80,
-                height: 80,
-                fit: BoxFit.cover,
-              ),
-            ),
-            title: Text(
-              articles[index].title ?? "",
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: AppStyles.bodyText2.copyWith(fontWeight: FontWeight.bold),
-            ),
-            subtitle: Row(
-              children: [
-                /// show the time in hours ago
-                const Icon(Icons.access_time_outlined, size: 12),
-                const SizedBox(width: 2),
-                Text(
-                  DateTimeHelper.getHoursAgo(
-                    articles[index].publishedAt.toString(),
-                  ),
-                  style: AppStyles.caption,
-                ),
-
-                /// empty space
-                const SizedBox(width: 20),
-
-                /// show the author name
-                const Icon(Icons.person_outlined, size: 14),
-                const SizedBox(width: 2),
-                Text(
-                  "by ${articles[index].source?.name ?? ""}",
-                  style: AppStyles.caption,
-                ),
-              ],
-            ),
-          );
+          /// build the list tile
+          return _listTile(context, articles[index]);
         },
+      ),
+    );
+  }
+
+  /// list tile
+  /// this will show the article details
+  /// when the user clicks on the list tile
+  Widget _listTile(BuildContext context, Articles article) {
+    return ListTile(
+      onTap: () {
+        context.push(NewsDetailScreen(article: article));
+      },
+      leading: ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: CommonImageWidget(
+          url: article.urlToImage ?? "https://picsum.photos/200/300",
+          width: 80,
+          height: 80,
+        ),
+      ),
+      title: Text(
+        article.title ?? "",
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+        style: AppStyles.bodyText2.copyWith(fontWeight: FontWeight.bold),
+      ),
+      subtitle: Row(
+        children: [
+          /// show the time in hours ago
+          const Icon(Icons.access_time_outlined, size: 12),
+          const SizedBox(width: 2),
+          Text(
+            DateTimeHelper.getHoursAgo(
+              article.publishedAt.toString(),
+            ),
+            style: AppStyles.caption,
+          ),
+
+          /// empty space
+          const SizedBox(width: 20),
+
+          /// show the author name
+          const Icon(Icons.person_outlined, size: 14),
+          const SizedBox(width: 2),
+          Text(
+            "by ${article.source?.name ?? ""}",
+            style: AppStyles.caption,
+          ),
+        ],
       ),
     );
   }
@@ -451,7 +492,7 @@ class _DiscoverTabState extends State<DiscoverTab>
           pageGeneral = 1;
           articlesGeneral = [];
           break;
-        case AppConstants.general:
+        case AppConstants.business:
           pageBusiness = 1;
           articlesBusiness = [];
           break;
@@ -476,6 +517,8 @@ class _DiscoverTabState extends State<DiscoverTab>
           articlesTechnology = [];
           break;
       }
+
+      /// fire event to get the data
       _discoverBloc.add(
         DiscoverGetContentEvent(
           page: 1,
@@ -493,6 +536,7 @@ class _DiscoverTabState extends State<DiscoverTab>
     ));
   }
 
+  /// this function will trigger the pull to refresh
   void triggerPullToRefresh(String category) {
     switch (_tabController.index) {
       case 0:
@@ -530,32 +574,5 @@ class _DiscoverTabState extends State<DiscoverTab>
           category: category,
           searchTerm: searchController.text.trim().toString()),
     );
-  }
-}
-
-class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
-  _SliverAppBarDelegate(this._tabBar);
-
-  final TabBar _tabBar;
-
-  @override
-  double get minExtent => _tabBar.preferredSize.height;
-
-  @override
-  double get maxExtent => _tabBar.preferredSize.height;
-
-  @override
-  Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      color: Colors.white,
-      child: _tabBar,
-    );
-  }
-
-  @override
-  bool shouldRebuild(_SliverAppBarDelegate oldDelegate) {
-    return false;
   }
 }
