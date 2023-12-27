@@ -108,7 +108,7 @@ class ProfileTab extends StatelessWidget {
     );
   }
 
-  void showThemeSwitcherDialog(BuildContext context) {
+  void showThemeSwitcherDialog(BuildContext context) async {
     var themeCubit = BlocProvider.of<ThemeCubit>(context);
     showDialog(
       context: context,
@@ -154,7 +154,7 @@ class ProfileTab extends StatelessWidget {
       {required String title,
       required IconData icon,
       bool isSelected = false,
-      required Null Function() onTap}) {
+      required Function() onTap}) {
     return ListTile(
       leading: Icon(icon),
       title: Text(title),

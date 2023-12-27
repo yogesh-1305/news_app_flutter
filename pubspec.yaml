@@ -64,6 +64,9 @@ dependencies:
   # for image caching
   cached_network_image: ^3.3.0
 
+  # Package for cache memory
+  flutter_secure_storage: 7.0.1
+
 flutter_gen:
   integrations:
     lottie: true
