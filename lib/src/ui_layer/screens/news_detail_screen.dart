@@ -4,6 +4,7 @@ import 'package:news_app_flutter/src/data_layer/models/response/base_api_respons
 import 'package:news_app_flutter/src/data_layer/res/app_styles.dart';
 import 'package:news_app_flutter/src/ui_layer/common/base_widget.dart';
 import 'package:news_app_flutter/src/ui_layer/common/common_news_header.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class NewsDetailScreen extends StatelessWidget {
   const NewsDetailScreen({super.key, required this.article});
@@ -84,6 +85,7 @@ class NewsDetailScreen extends StatelessWidget {
                   onPressed: () {
                     /// navigate to the article urls
                     /// in the browser
+                    _launchUrl(article.url ?? "");
                   },
                   child: Text(AppLocalizations.of(context)!.read_full_article),
                 ),
@@ -93,5 +95,14 @@ class NewsDetailScreen extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  Future<void> _launchUrl(String url) async {
+    if (!await launchUrl(
+      Uri.parse(url),
+      mode: LaunchMode.externalApplication,
+    )) {
+      throw Exception('Could not launch $url');
+    }
   }
 }

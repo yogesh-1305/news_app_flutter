@@ -67,6 +67,8 @@ dependencies:
   # Package for cache memory
   flutter_secure_storage: 7.0.1
 
+  url_launcher: ^6.2.2
+
 flutter_gen:
   integrations:
     lottie: true
