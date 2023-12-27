@@ -2,7 +2,7 @@ class ApiConstants {
   /// api URLs - start -------------------------------------------------
   /// Api URLS DEVELOPMENT
   static const urlDevServer = 'https://newsapi.org/v2/';
-  static const devApiKey = 'f082dd125065453ba5da3cb4fa97d35b';
+  static const devApiKey = '2ceed4e84ebb462787b1766271ce1ad1';
 
   /// Api URLS PRODUCTION
   static const urlProdServer = '';
@@ -15,7 +15,7 @@ class ApiConstants {
   /// api URLs - end ---------------------------------------------------
 
   /// api response codes - start ---------------------------------------
-  static const responseOk = "0k";
+  static const responseOk = "ok";
 
   /// api end-points - start -------------------------------------------
   static const topHeadlines = 'top-headlines';

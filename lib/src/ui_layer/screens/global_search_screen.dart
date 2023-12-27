@@ -11,6 +11,7 @@ import 'package:news_app_flutter/src/business_layer/utils/extensions/context_ext
 import 'package:news_app_flutter/src/business_layer/utils/helpers/date_time_helper.dart';
 import 'package:news_app_flutter/src/data_layer/models/response/base_api_response.dart';
 import 'package:news_app_flutter/src/data_layer/res/app_styles.dart';
+import 'package:news_app_flutter/src/ui_layer/common/common_image_widget.dart';
 import 'package:news_app_flutter/src/ui_layer/common/common_text_field.dart';
 import 'package:news_app_flutter/src/ui_layer/screens/news_detail_screen.dart';
 
@@ -245,12 +246,14 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Assets.animations.phoneGlobeAnim.lottie(),
+          Expanded(child: Assets.animations.phoneGlobeAnim.lottie()),
           const SizedBox(height: 20),
           Text(
             _localizations.search_for_news_from_all_over_the_world,
             style: AppStyles.headline6,
+            textAlign: TextAlign.center,
           ),
+          const SizedBox(height: 20),
         ],
       ),
     );
@@ -263,7 +266,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
         padding: const EdgeInsets.all(20),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          childAspectRatio: 0.68,
+          childAspectRatio: 0.65,
           crossAxisSpacing: 10,
           mainAxisSpacing: 10,
         ),
@@ -297,9 +300,8 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
         borderRadius: BorderRadius.circular(10),
         child: Column(
           children: [
-            Image.network(
-              article.urlToImage ?? "https://picsum.photos/300/200",
-              fit: BoxFit.fill,
+            CommonImageWidget(
+              url: article.urlToImage,
               width: double.infinity,
               height: 100,
             ),
@@ -465,14 +467,14 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
   /// options are Relevance, Popularity and Published At
   List<Widget> _buildSortByList(GlobalSearchFilterState state) {
     int sortIndex = -1;
-    switch (state.sortBy) {
-      case "Relevance":
+    switch (state.sortBy?.toLowerCase()) {
+      case "relevancy":
         sortIndex = 0;
         break;
-      case "Popularity":
+      case "popularity":
         sortIndex = 1;
         break;
-      case "Published At":
+      case "publishedat":
         sortIndex = 2;
         break;
       default:
@@ -510,7 +512,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
         sortBy = "popularity";
         break;
       case 2:
-        sortBy = "publishedAt";
+        sortBy = "publishedat";
         break;
       default:
         sortBy = "";

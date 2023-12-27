@@ -12,6 +12,7 @@ import 'package:news_app_flutter/src/business_layer/utils/helpers/date_time_help
 import 'package:news_app_flutter/src/data_layer/constants/app_constants.dart';
 import 'package:news_app_flutter/src/data_layer/models/response/base_api_response.dart';
 import 'package:news_app_flutter/src/data_layer/res/app_styles.dart';
+import 'package:news_app_flutter/src/ui_layer/common/common_image_widget.dart';
 import 'package:news_app_flutter/src/ui_layer/common/common_text_field.dart';
 import 'package:news_app_flutter/src/ui_layer/common/sliver_delegates.dart';
 import 'package:news_app_flutter/src/ui_layer/screens/global_search_screen.dart';
@@ -445,11 +446,10 @@ class _DiscoverTabState extends State<DiscoverTab>
       },
       leading: ClipRRect(
         borderRadius: BorderRadius.circular(10),
-        child: Image.network(
-          article.urlToImage ?? "https://picsum.photos/200/300",
+        child: CommonImageWidget(
+          url: article.urlToImage ?? "https://picsum.photos/200/300",
           width: 80,
           height: 80,
-          fit: BoxFit.cover,
         ),
       ),
       title: Text(

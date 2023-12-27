@@ -11,6 +11,7 @@ import 'package:news_app_flutter/src/business_layer/utils/helpers/date_time_help
 import 'package:news_app_flutter/src/data_layer/models/response/base_api_response.dart';
 import 'package:news_app_flutter/src/data_layer/res/app_styles.dart';
 import 'package:news_app_flutter/src/ui_layer/common/base_widget.dart';
+import 'package:news_app_flutter/src/ui_layer/common/common_image_widget.dart';
 import 'package:news_app_flutter/src/ui_layer/common/common_news_header.dart';
 import 'package:news_app_flutter/src/ui_layer/screens/global_search_screen.dart';
 import 'package:news_app_flutter/src/ui_layer/screens/news_detail_screen.dart';
@@ -183,19 +184,10 @@ class _HomeTabState extends State<HomeTab> {
           SizedBox(
             height: 160,
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: Image.network(
-                data.urlToImage ?? "",
-                width: double.infinity,
-                height: double.infinity,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return const Center(
-                    child: Icon(Icons.error),
-                  );
-                },
-              ),
-            ),
+                borderRadius: BorderRadius.circular(10),
+                child: CommonImageWidget(
+                  url: data.urlToImage ?? "",
+                )),
           ),
           const SizedBox(height: 10),
 

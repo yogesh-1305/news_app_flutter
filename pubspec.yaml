@@ -61,8 +61,10 @@ dependencies:
   # for animations
   lottie: ^2.7.0
 
-flutter_gen:
+  # for image caching
+  cached_network_image: ^3.3.0
 
+flutter_gen:
   integrations:
     lottie: true
 

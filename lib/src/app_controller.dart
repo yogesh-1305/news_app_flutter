@@ -65,7 +65,7 @@ class _AppControllerState extends State<AppController>
               AppLocalizations.of(context)!.app_name,
           debugShowCheckedModeBanner: false,
           navigatorKey: navigatorKey,
-          themeMode: ThemeMode.system,
+          themeMode: ThemeMode.light,
           theme: AppThemes.light,
           darkTheme: AppThemes.dark,
           localizationsDelegates: AppLocalizations.localizationsDelegates,

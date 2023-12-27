@@ -4,6 +4,7 @@ import 'package:news_app_flutter/src/business_layer/utils/extensions/context_ext
 import 'package:news_app_flutter/src/data_layer/models/response/base_api_response.dart';
 import 'package:news_app_flutter/src/data_layer/res/app_colors.dart';
 import 'package:news_app_flutter/src/data_layer/res/app_styles.dart';
+import 'package:news_app_flutter/src/ui_layer/common/common_image_widget.dart';
 import 'package:news_app_flutter/src/ui_layer/screens/news_detail_screen.dart';
 
 class CommonNewsHeader extends StatelessWidget {
@@ -63,12 +64,10 @@ class CommonNewsHeader extends StatelessWidget {
   }
 
   Widget _backgroundImage(BuildContext context) {
-    return Image.network(
-      article.urlToImage ?? "https://picsum.photos/200/300",
-      width: double.infinity,
-      height: MediaQuery.sizeOf(context).height * 0.45,
-      fit: BoxFit.fill,
-    );
+    return CommonImageWidget(
+        width: double.infinity,
+        height: MediaQuery.sizeOf(context).height * 0.45,
+        url: article.urlToImage);
   }
 
   Widget _foregroundData(BuildContext context) {
