@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:news_app_flutter/src/data_layer/res/app_colors.dart';
-import 'package:news_app_flutter/src/data_layer/res/app_styles.dart';
 
 class AppThemes {
+  /// light theme
   static final ThemeData light = ThemeData.light(
     useMaterial3: true,
   ).copyWith(
@@ -15,17 +15,14 @@ class AppThemes {
       onPrimary: AppColors.colorOnPrimary,
       background: AppColors.colorBackground,
     ),
-    textTheme: TextTheme(
-      headlineLarge: AppStyles.headline1,
-      headlineMedium: AppStyles.headline2,
-      headlineSmall: AppStyles.headline3,
-    ),
-    tabBarTheme: TabBarTheme(
-      labelColor: AppColors.colorOnPrimary,
-      unselectedLabelColor: AppColors.colorOnPrimary.withOpacity(0.5),
+    buttonTheme: const ButtonThemeData(
+      colorScheme: ColorScheme.light(),
+      buttonColor: AppColors.colorAccent,
+      textTheme: ButtonTextTheme.primary,
     ),
   );
 
+  /// dark theme
   static final ThemeData dark = ThemeData.dark(
     useMaterial3: true,
   ).copyWith(
@@ -37,6 +34,11 @@ class AppThemes {
       primary: AppColors.colorPrimaryDark,
       onPrimary: AppColors.colorOnPrimaryDark,
       background: AppColors.colorBackgroundDark,
+    ),
+    buttonTheme: const ButtonThemeData(
+      colorScheme: ColorScheme.dark(),
+      buttonColor: AppColors.colorAccent,
+      textTheme: ButtonTextTheme.primary,
     ),
   );
 }

@@ -52,6 +52,7 @@ class Dashboard extends StatelessWidget {
         type: BottomNavigationBarType.fixed,
         showUnselectedLabels: false,
         showSelectedLabels: false,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         unselectedItemColor:
             Theme.of(context).colorScheme.onPrimary.withOpacity(0.4),
         selectedItemColor: Theme.of(context).colorScheme.onPrimary,
